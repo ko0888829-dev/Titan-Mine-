@@ -32,7 +32,7 @@
       color: #09090b;
       font-weight: 800;
       box-shadow: 0 6px 20px rgba(234, 179, 8, 0.32);
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease;
     }
     .gold-btn:active { transform: scale(0.98); }
     .gold-text {
@@ -40,17 +40,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .coin-glow {
-      filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.45));
-    }
-    .nav-active {
-      color: #facc15;
-    }
+    .nav-active { color: #facc15; }
     .nav-active .nav-pill {
       background: rgba(250, 204, 21, 0.14);
       border: 1px solid rgba(250, 204, 21, 0.35);
     }
-    /* Hide scrollbar */
     ::-webkit-scrollbar { display: none; }
   </style>
 </head>
@@ -59,8 +53,7 @@
   <!-- TOP HEADER -->
   <header class="sticky top-0 z-30 backdrop-blur-md bg-[#09090b]/85 border-b border-amber-500/15 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-2.5">
-      <!-- Titan Gold Coin SVG -->
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 via-yellow-500 to-amber-700 p-[2px] coin-glow shrink-0">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 via-yellow-500 to-amber-700 p-[2px] shrink-0">
         <div class="w-full h-full rounded-full bg-[#0d0d10] flex items-center justify-center">
           <svg class="w-5 h-5" viewBox="0 0 64 64" fill="none">
             <path d="M14 18H50L32 52L14 18Z" stroke="#facc15" stroke-width="5" stroke-linejoin="round"/>
@@ -80,7 +73,7 @@
     <div class="flex items-center gap-2">
       <button onclick="openModal('notifModal')" class="relative w-9 h-9 rounded-full gold-card flex items-center justify-center text-zinc-200">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-        <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-black text-[10px] font-extrabold flex items-center justify-center">1</span>
+        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-black text-[10px] font-extrabold flex items-center justify-center">1</span>
       </button>
 
       <button onclick="openModal('profileModal')" class="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full gold-card">
@@ -93,20 +86,11 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT CONTAINER -->
   <main class="px-4 pt-4 space-y-4">
 
     <!-- ==================== TAB 1: HOME ==================== -->
     <section id="tab-home" class="space-y-4">
-      <!-- Welcome Hero Card -->
       <div class="gold-card-highlight rounded-3xl p-5 relative overflow-hidden">
-        <div class="absolute -right-6 -bottom-6 w-36 h-36 opacity-20 pointer-events-none">
-          <svg viewBox="0 0 100 100" fill="none">
-            <circle cx="50" cy="50" r="46" stroke="#facc15" stroke-width="4" stroke-dasharray="6 4"/>
-            <path d="M24 30H76L50 80L24 30Z" stroke="#facc15" stroke-width="6"/>
-            <path d="M50 30V78" stroke="#facc15" stroke-width="6"/>
-          </svg>
-        </div>
         <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> OFFICIAL TON WEB3 AIRDROP
         </span>
@@ -117,12 +101,12 @@
         <div class="flex flex-wrap gap-1.5 mt-3.5">
           <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Mine</span>
           <span onclick="verifyWalletAction()" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Verify</span>
-          <span onclick="openModal('levelsModal')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Upgrade</span>
+          <span onclick="openModal('levelsModal')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Upgrade (Lv.1-100)</span>
           <span onclick="switchTab('market')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">Trade on DeDust</span>
         </div>
       </div>
 
-      <!-- App Balance Bar -->
+      <!-- App Balance -->
       <div onclick="switchTab('wallet')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400 font-black">TT</div>
@@ -134,24 +118,22 @@
         <div class="text-right">
           <div class="text-[11px] text-zinc-400">Min withdraw: <span class="text-amber-300 font-bold">10,000 TT</span></div>
           <div class="w-28 h-1.5 bg-zinc-800 rounded-full mt-2 overflow-hidden ml-auto">
-            <div id="withdrawProgressBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full" style="width: 5%"></div>
+            <div id="withdrawProgressBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full" style="width: 2%"></div>
           </div>
         </div>
       </div>
 
-      <!-- Main 24h Mining Card -->
+      <!-- 24h Mining Card -->
       <div class="gold-card rounded-3xl p-5 space-y-4">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
-            </div>
+            <div class="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">⚡</div>
             <div>
-              <h2 class="font-extrabold text-base text-white">Mining • Lv.<span id="miningLevelNum">1</span></h2>
+              <h2 class="font-extrabold text-base text-white">Mining • Lv.<span id="miningLevelNum">1</span> <span class="text-xs text-zinc-400">/ 100</span></h2>
               <p id="miningStatusLabel" class="text-xs font-semibold text-amber-400">Active Mining • Running</p>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold">⚡ x1.00</span>
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold">Lv.<span id="badgeLvTop">1</span></span>
         </div>
 
         <div>
@@ -165,7 +147,6 @@
           </div>
         </div>
 
-        <!-- 24h Cap Progress Bar -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <span id="capStatusText" class="text-zinc-400">24h mining cycle progress</span>
@@ -176,14 +157,12 @@
           </div>
         </div>
 
-        <!-- One-time Verification Notice -->
         <div id="verifyBanner" class="rounded-2xl bg-amber-500/10 border border-amber-400/25 p-3 flex items-center gap-2.5 text-xs text-amber-200">
-          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <span>One-time wallet verification (<b>0.05 TON</b>) required to claim mined TT</span>
+          <span>🔒 One-time wallet verification (<b>0.05 TON</b>) required to claim mined TT</span>
         </div>
 
-        <button id="mainClaimBtn" onclick="handleClaimOrVerify()" class="w-full py-3.5 rounded-2xl gold-btn text-sm flex items-center justify-center gap-2">
-          <span>🛡️ Verify Wallet (0.05 TON) & Claim</span>
+        <button id="mainClaimBtn" onclick="handleClaimOrVerify()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
+          🛡️ Verify Wallet (0.05 TON) & Claim
         </button>
       </div>
 
@@ -200,14 +179,14 @@
           <div class="text-[11px] text-zinc-500">TT/day</div>
         </div>
         <div class="gold-card rounded-2xl p-3.5">
-          <div class="text-xs text-zinc-400 font-medium">📈 Boost</div>
-          <div class="text-xl font-extrabold text-white mt-1">x1.00</div>
-          <div class="text-[11px] text-zinc-500">multiplier</div>
+          <div class="text-xs text-zinc-400 font-medium">📈 Hold Tier</div>
+          <div class="text-xl font-extrabold text-white mt-1">Lv.<span id="gridLvCard">1</span>/100</div>
+          <div class="text-[11px] text-zinc-500">auto-upgrade</div>
         </div>
         <div onclick="openModal('levelsModal')" class="gold-card rounded-2xl p-3.5 cursor-pointer">
           <div class="text-xs text-zinc-400 font-medium">🛡️ League</div>
           <div class="text-xl font-extrabold text-amber-300 mt-1" id="gridLeague">Bronze</div>
-          <div class="text-[11px] text-zinc-500" id="gridLeagueSub">Lv.1 • Bronze I</div>
+          <div class="text-[11px] text-zinc-500" id="gridLeagueSub">Lv.1 • Tap for 1-100</div>
         </div>
       </div>
 
@@ -220,7 +199,7 @@
               <span class="text-base" id="nextLvBadge">1</span>
             </div>
             <div>
-              <h3 class="font-extrabold text-sm text-white">Next Level: <span id="nextLvTitle">2</span></h3>
+              <h3 class="font-extrabold text-sm text-white">Next Level: <span id="nextLvTitle">2</span> <span class="text-xs text-zinc-400">(Max 100)</span></h3>
               <p class="text-xs font-semibold text-amber-400">Unlocks <span id="nextLvRate">400</span> TT/day</p>
               <p class="text-[11px] text-zinc-400">Hold TT on-chain OR invite verified friends</p>
             </div>
@@ -246,26 +225,22 @@
           <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">✨ TASKS & REWARDS</span>
           <button onclick="switchTab('station')" class="text-xs text-amber-400 font-bold">Open Station ›</button>
         </div>
-        <div>
-          <h3 class="font-extrabold text-base text-white">Mission Center</h3>
-          <p class="text-xs text-zinc-400 mt-0.5">Complete social & milestone missions, unlock free boosts, and view all 6 levels.</p>
-        </div>
         <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="claimDailyStreak()" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 text-left">
+          <button onclick="claimDailyStreak()" class="bg-white/5 border border-white/10 rounded-2xl p-3 text-left">
             <div class="text-[10px] font-bold text-amber-400 uppercase">🔥 DAILY STREAK</div>
             <div class="text-sm font-extrabold text-white mt-0.5">Day <span id="streakDay">1</span> / 30</div>
             <div id="streakStatus" class="text-[11px] text-emerald-400 font-semibold mt-0.5">Tap to Claim +50 TT</div>
           </button>
-          <button onclick="openModal('levelsModal')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 text-left">
-            <div class="text-[10px] font-bold text-amber-400 uppercase">🎯 LEVELS 1–6</div>
-            <div class="text-sm font-extrabold text-white mt-0.5">Up to 1,200/d</div>
+          <button onclick="openModal('levelsModal')" class="bg-white/5 border border-white/10 rounded-2xl p-3 text-left">
+            <div class="text-[10px] font-bold text-amber-400 uppercase">🎯 LEVELS 1–100</div>
+            <div class="text-sm font-extrabold text-white mt-0.5">Up to 15,000/d</div>
             <div class="text-[11px] text-zinc-400 mt-0.5">View full matrix ›</div>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ==================== TAB 2: STATION (TASKS) ==================== -->
+    <!-- ==================== TAB 2: STATION ==================== -->
     <section id="tab-station" class="hidden space-y-3">
       <div class="mb-2">
         <h2 class="text-xl font-extrabold text-white">Task Station</h2>
@@ -274,27 +249,29 @@
       <div id="tasksContainer" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== TAB 3: MARKET (INSTANT SWITCH / SWAP) ==================== -->
+    <!-- ==================== TAB 3: MARKET (LIVE DEDUST SWAP) ==================== -->
     <section id="tab-market" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl font-extrabold text-white">Instant Switch</h2>
-          <p class="text-xs text-zinc-400">Direct DeDust.io Liquidity Swap for Titan (TT)</p>
+          <p class="text-xs text-zinc-400">Direct DeDust.io Liquidity Pool Swap</p>
         </div>
-        <span class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">Live DeDust.io</span>
+        <button onclick="fetchLiveDeDustRate()" class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
+          ↻ <span id="liveRateBadge">Syncing Rate...</span>
+        </button>
       </div>
 
       <div class="gold-card rounded-3xl p-4 space-y-3">
-        <!-- You Pay Box -->
+        <!-- You Pay -->
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
             <span>You pay</span>
             <span>Available: <b class="text-white" id="swapAvailBalance">0.00</b> <span id="payCurrencyLabel">TON</span></span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <input id="swapInputAmount" type="number" value="1" min="0.1" step="0.1" oninput="recalcSwap()" class="bg-transparent text-2xl font-extrabold text-white w-full focus:outline-none" />
+            <input id="swapInputAmount" type="number" value="1" min="0.05" step="0.1" oninput="recalcSwap()" class="bg-transparent text-2xl font-extrabold text-white w-full focus:outline-none" />
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="togglePayAsset()" class="px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold flex items-center gap-1">
+              <button onclick="togglePayAsset()" class="px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold">
                 <span id="payAssetBtnText">💎 TON</span> ▾
               </button>
               <button onclick="setMaxSwap()" class="px-2.5 py-1.5 rounded-full bg-white/10 text-xs font-bold text-zinc-200">MAX</button>
@@ -302,29 +279,25 @@
           </div>
         </div>
 
-        <!-- Switch Direction Button -->
         <div class="flex justify-center -my-2 relative z-10">
-          <button onclick="flipSwapDirection()" class="w-10 h-10 rounded-full bg-[#18181d] border border-amber-400/40 text-amber-400 flex items-center justify-center shadow-lg active:rotate-180 transition-transform">
-            ⇅
-          </button>
+          <button onclick="togglePayAsset()" class="w-10 h-10 rounded-full bg-[#18181d] border border-amber-400/40 text-amber-400 flex items-center justify-center shadow-lg">⇅</button>
         </div>
 
-        <!-- You Receive Box -->
+        <!-- You Receive -->
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
             <span>You receive ≈</span>
-            <span class="text-amber-400 font-semibold">Live DeDust.io estimate</span>
+            <span class="text-emerald-400 font-semibold" id="poolStatusText">Live DeDust.io Pool</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <div id="swapOutputAmount" class="text-2xl font-extrabold text-amber-400">55.308</div>
-            <div class="px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-amber-400 text-black text-[9px] font-black flex items-center justify-center">T</span>
+            <div id="swapOutputAmount" class="text-2xl font-extrabold text-amber-400">0.000</div>
+            <div class="px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold">
               <span id="receiveAssetBtnText">TT</span>
             </div>
           </div>
         </div>
 
-        <!-- Fee & Slippage Card -->
+        <!-- Fee & Slippage -->
         <div class="bg-white/5 rounded-2xl p-3.5 space-y-3 text-xs">
           <div class="flex justify-between">
             <span class="text-zinc-400">Service fee</span>
@@ -332,27 +305,25 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-400">Max Slippage</span>
-            <div class="flex gap-1.5" id="slippageGroup">
-              <button onclick="setSlippage(0.5, this)" class="slip-btn px-2.5 py-1 rounded-full bg-amber-400 text-black font-extrabold">0.5%</button>
-              <button onclick="setSlippage(1, this)" class="slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold">1%</button>
-              <button onclick="setSlippage(2, this)" class="slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold">2%</button>
+            <div class="flex gap-1.5">
+              <button onclick="setSlippage(1, this)" class="slip-btn px-2.5 py-1 rounded-full bg-amber-400 text-black font-extrabold">1%</button>
+              <button onclick="setSlippage(3, this)" class="slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold">3%</button>
+              <button onclick="setSlippage(5, this)" class="slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold">5%</button>
             </div>
           </div>
           <div class="flex justify-between pt-2 border-t border-white/10">
-            <span class="font-bold text-zinc-300">Swap and app fee</span>
-            <span id="totalSwapCost" class="font-extrabold text-amber-400">1.1 TON</span>
+            <span class="font-bold text-zinc-300">Total + Gas & App Fee</span>
+            <span id="totalSwapCost" class="font-extrabold text-amber-400">1.35 TON</span>
           </div>
         </div>
 
-        <!-- Contract Address Copy Bar -->
         <div onclick="copyContract()" class="cursor-pointer bg-black/50 border border-amber-500/20 rounded-xl p-2.5 flex items-center justify-between text-[11px]">
           <span class="text-zinc-400">TT Jetton: <span class="text-zinc-200 font-mono">EQBgi1gn...uUzazt</span></span>
           <span class="text-amber-400 font-bold">Copy CA 📋</span>
         </div>
 
-        <!-- Action Buttons -->
         <button id="swapActionBtn" onclick="executeInstantSwitch()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
-          ⇅ Connect Wallet to Swap
+          ⇅ Connect Wallet to Buy TT
         </button>
 
         <a href="https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" target="_blank" class="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-bold text-zinc-200 block">
@@ -365,12 +336,12 @@
     <section id="tab-friends" class="hidden space-y-4">
       <div class="gold-card-highlight rounded-3xl p-5">
         <h2 class="text-xl font-extrabold text-white">Invite & Earn</h2>
-        <p class="text-xs text-zinc-300 mt-0.5">Build your crew. Grow together & unlock higher levels.</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Build your crew. Grow together & unlock up to Level 100.</p>
         <div class="flex items-center gap-3 mt-4">
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
             <b>from your active friends' mining</b><br>
-            5+ verified friends also unlock Level 2 (400 TT/day).
+            +100 TT instant bonus per 0.05 TON verified friend!
           </div>
         </div>
       </div>
@@ -399,16 +370,15 @@
           <button onclick="shareInviteLink()" class="py-3 rounded-xl gold-btn text-xs">✈️ Invite friends</button>
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
-        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.05 TON</b> wallet verification. 5% commission is added automatically when they claim mined TT.</p>
+        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.05 TON</b> wallet verification. Both instant bonus + 5% mining commission are credited automatically.</p>
       </div>
 
-      <!-- Ambassador Card -->
       <div onclick="openModal('ambassadorModal')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-lg">👑</div>
           <div>
             <div class="font-extrabold text-sm text-white">Become an Ambassador</div>
-            <div class="text-xs text-zinc-400">Unlock higher referral rewards (up to 10%+)</div>
+            <div class="text-xs text-zinc-400">Unlock higher referral rewards (up to 15%)</div>
           </div>
         </div>
         <span class="text-zinc-400">›</span>
@@ -422,7 +392,6 @@
         <p class="text-xs text-zinc-400">Your Titan (TT) assets & verification, in one place</p>
       </div>
 
-      <!-- On-Chain Wallet Box -->
       <div class="gold-card-highlight rounded-3xl p-5 space-y-3">
         <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 border border-white/10 text-xs">
           <span id="walletStatusDot" class="w-2 h-2 rounded-full bg-rose-500"></span>
@@ -440,7 +409,6 @@
         </div>
       </div>
 
-      <!-- App Balance & Actions -->
       <div class="gold-card rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <div>
@@ -464,7 +432,6 @@
         </div>
       </div>
 
-      <!-- One-Time Wallet Verification Card -->
       <div id="walletVerifyCard" class="gold-card rounded-3xl p-4 space-y-2.5">
         <h3 class="font-extrabold text-sm text-white">One-time wallet verification</h3>
         <p class="text-xs text-zinc-400">A new wallet is verified once (0.05 TON). Reconnecting is free.</p>
@@ -473,7 +440,6 @@
         </button>
       </div>
 
-      <!-- Recent Activity -->
       <div class="space-y-2.5">
         <h3 class="font-extrabold text-base text-white">Recent activity</h3>
         <div id="activityList" class="space-y-2"></div>
@@ -482,33 +448,27 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION BAR -->
+  <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 inset-x-0 z-40 bg-[#0c0c0f]/95 backdrop-blur-lg border-t border-amber-500/15 px-2 py-2 grid grid-cols-5">
     <button onclick="switchTab('home')" id="nav-home" class="nav-btn nav-active flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">🏠</div>
-      <span>Home</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">🏠</div><span>Home</span>
     </button>
     <button onclick="switchTab('station')" id="nav-station" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">⚡</div>
-      <span>Station</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">⚡</div><span>Station</span>
     </button>
     <button onclick="switchTab('market')" id="nav-market" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">⇄</div>
-      <span>Market</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">⇄</div><span>Market</span>
     </button>
     <button onclick="switchTab('friends')" id="nav-friends" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">👥</div>
-      <span>Friends</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">👥</div><span>Friends</span>
     </button>
     <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">👛</div>
-      <span>Wallet</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">👛</div><span>Wallet</span>
     </button>
   </nav>
 
   <!-- ==================== MODALS ==================== -->
-
-  <!-- Miner Profile Modal -->
+  <!-- Profile Modal -->
   <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
@@ -526,42 +486,30 @@
         <div>
           <div class="font-extrabold text-base text-white" id="profName">Titan Miner</div>
           <div class="text-xs text-zinc-400" id="profUser">@miner</div>
-          <div class="text-xs font-bold text-amber-400 mt-0.5">Bronze I • <span id="profDaily">305</span> TT/day</div>
+          <div class="text-xs font-bold text-amber-400 mt-0.5"><span id="profLeague">Bronze</span> • <span id="profDaily">305</span> TT/day</div>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2.5 text-xs">
-        <div class="bg-white/5 rounded-2xl p-3">
-          <span class="text-zinc-400">⚡ App Balance</span>
-          <div class="text-base font-extrabold text-white mt-1"><span id="profAppBal">0</span> TT</div>
-        </div>
-        <div class="bg-white/5 rounded-2xl p-3">
-          <span class="text-zinc-400">👛 On-chain Hold</span>
-          <div class="text-base font-extrabold text-white mt-1"><span id="profChainHold">0</span> TT</div>
-        </div>
-        <div class="bg-white/5 rounded-2xl p-3">
-          <span class="text-zinc-400">👥 Qualified Crew</span>
-          <div class="text-base font-extrabold text-white mt-1" id="profCrew">0 / 0</div>
-        </div>
-        <div class="bg-white/5 rounded-2xl p-3">
-          <span class="text-zinc-400">🛡️ Verification</span>
-          <div id="profVerifStatus" class="text-base font-extrabold text-amber-400 mt-1">Unverified</div>
-        </div>
+        <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">⚡ App Balance</span><div class="text-base font-extrabold text-white mt-1"><span id="profAppBal">0</span> TT</div></div>
+        <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">👛 On-chain Hold</span><div class="text-base font-extrabold text-white mt-1"><span id="profChainHold">0</span> TT</div></div>
+        <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">👥 Qualified Crew</span><div class="text-base font-extrabold text-white mt-1" id="profCrew">0 / 0</div></div>
+        <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">🛡️ Verification</span><div id="profVerifStatus" class="text-base font-extrabold text-amber-400 mt-1">Unverified</div></div>
       </div>
-      <button onclick="closeModal('profileModal'); verifyWalletAction();" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
-        🛡️ Verify Wallet • 0.05 TON
-      </button>
+      <button onclick="closeModal('profileModal'); verifyWalletAction();" class="w-full py-3.5 rounded-2xl gold-btn text-sm">🛡️ Verify Wallet • 0.05 TON</button>
     </div>
   </div>
 
-  <!-- Levels 1-6 Matrix Modal -->
+  <!-- Levels 1-100 Modal -->
   <div id="levelsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
-    <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] overflow-y-auto">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-extrabold text-white">Mining Levels (1 – 6)</h3>
+    <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center shrink-0">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">Mining Levels (1 – 100)</h3>
+          <p class="text-xs text-zinc-400">Auto-upgrade by holding TT on-chain OR inviting verified friends</p>
+        </div>
         <button onclick="closeModal('levelsModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
-      <p class="text-xs text-zinc-400">Upgrade automatically by holding TT on-chain OR inviting 0.05 TON verified friends.</p>
-      <div id="levelsMatrixList" class="space-y-2"></div>
+      <div id="levelsMatrixList" class="space-y-2 overflow-y-auto pr-1"></div>
     </div>
   </div>
 
@@ -569,15 +517,12 @@
   <div id="ambassadorModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-lg font-extrabold text-white">Become a TITAN Ambassador</h3>
-          <p class="text-xs text-zinc-400">Apply for higher referral commission rates (10%+)</p>
-        </div>
+        <div><h3 class="text-lg font-extrabold text-white">Become a TITAN Ambassador</h3><p class="text-xs text-zinc-400">Apply for higher referral commission rates</p></div>
         <button onclick="closeModal('ambassadorModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
       <input id="ambLink" type="text" placeholder="https://t.me/yourchannel or @username" class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white" />
-      <input id="ambSubs" type="number" placeholder="Estimated Followers / Subscribers (e.g. 1000)" class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white" />
-      <textarea id="ambNote" rows="3" placeholder="Share your community focus or promotional plan..." class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white"></textarea>
+      <input id="ambSubs" type="number" placeholder="Estimated Followers / Subscribers" class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+      <textarea id="ambNote" rows="3" placeholder="Share your promotional plan..." class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white"></textarea>
       <button onclick="submitAmbassador()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">Submit Application</button>
     </div>
   </div>
@@ -586,23 +531,16 @@
   <div id="notifModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-lg font-extrabold text-white">Notifications</h3>
-          <p class="text-xs text-zinc-400">Mining, verification, levels & withdrawal updates</p>
-        </div>
+        <h3 class="text-lg font-extrabold text-white">Notifications</h3>
         <button onclick="closeModal('notifModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
-        <div class="flex justify-between font-bold text-amber-400">
-          <span>ℹ️ Welcome to TITAN (TT)!</span>
-          <span class="text-zinc-500">Today</span>
-        </div>
-        <p class="text-zinc-300 leading-relaxed">Your Level 1 rig is running at 305 TT/day. Connect & verify your TON wallet (0.05 TON once) when ready to claim.</p>
+        <div class="font-bold text-amber-400">ℹ️ Welcome to TITAN (TT) • Levels 1-100 Active!</div>
+        <p class="text-zinc-300">Hold TT on-chain or invite verified friends to climb up to Level 100 (15,000 TT/day).</p>
       </div>
     </div>
   </div>
 
-  <!-- Toast Alert -->
   <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full bg-amber-400 text-black font-extrabold text-xs shadow-xl"></div>
 
 <script>
@@ -611,33 +549,88 @@
     COIN_NAME: "Titan",
     COIN_SYMBOL: "TT",
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
-    ADMIN_WALLET: "UQBF...9cUt", // <-- သင်၏ TON လက်ခံမည့် Wallet Address အပြည့်အစုံ ထည့်ပါ
-    BOT_USERNAME: "TitanMining_bot",
+    // အရေးကြီး: အောက်ပါ ADMIN_WALLET နေရာတွင် သင့် TON Wallet Address အပြည့်အစုံ (48 လုံး) ထည့်ပါ!
+    ADMIN_WALLET: "UQCtF1234567890abcdefghijklmnopqrstuvwxyz1234uES8",
+    DEDUST_NATIVE_VAULT: "EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_",
+    BOT_USERNAME: "TitanMining_bot", // <-- သင့် Bot Username ပြောင်းထည့်ပါ
     VERIFY_TON_AMOUNT: 0.05,
     SERVICE_FEE_TON: 0.1,
     MIN_WITHDRAW: 10000,
-    TT_PER_TON_RATE: 55.308, // Live DeDust reference rate
-    FIREBASE_URL: "" // <-- Firebase Realtime DB URL ရှိလျှင် ထည့်ပါ (ဥပမာ: https://your-app.firebaseio.com)
+    FIREBASE_URL: "" // <-- Firebase Realtime Database URL ထည့်ပါ (ဥပမာ https://xxx.firebaseio.com)
   };
 
-  const LEVELS = [
-    { lv: 1, name: "Bronze I", daily: 305, holdReq: 0, refReq: 0 },
-    { lv: 2, name: "Bronze II", daily: 400, holdReq: 60, refReq: 5 },
-    { lv: 3, name: "Silver I", daily: 550, holdReq: 250, refReq: 15 },
-    { lv: 4, name: "Gold I", daily: 750, holdReq: 800, refReq: 35 },
-    { lv: 5, name: "Platinum", daily: 980, holdReq: 2000, refReq: 75 },
-    { lv: 6, name: "Titan Sovereign", daily: 1200, holdReq: 5000, refReq: 150 }
-  ];
+  // ==================== GENERATE LEVELS 1 TO 100 ====================
+  function getLeagueName(lv) {
+    if (lv <= 10) return "Bronze";
+    if (lv <= 25) return "Silver";
+    if (lv <= 45) return "Gold";
+    if (lv <= 65) return "Platinum";
+    if (lv <= 85) return "Diamond";
+    return "Titan Sovereign";
+  }
+
+  const LEVELS = Array.from({ length: 100 }, (_, i) => {
+    const lv = i + 1;
+    if (lv === 1) return { lv: 1, name: "Bronze I", daily: 305, holdReq: 0, refReq: 0 };
+    const daily = Math.round(305 + (lv - 1) * 148.43); // Scales smoothly up to 15,000 TT/day at Lv.100
+    const holdReq = Math.round(Math.pow(lv - 1, 1.85) * 35); // Scales up to ~175,000 TT at Lv.100
+    const refReq = Math.round((lv - 1) * 3.5); // Scales up to 347 verified friends at Lv.100
+    return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
+  });
 
   const DEFAULT_TASKS = [
-    { id: "t1", type: "ONE TIME • SOCIAL", title: "Join Official Titan Channel", desc: "Join channel & tap Verify & Claim", reward: 150, url: "https://t.me/cryptominingmm0" },
-    { id: "t2", type: "PROMOTED • INSTANT", title: "DeDust Liquidity Pool Check", desc: "Visit TT/TON pool on DeDust.io", reward: 50, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" },
-    { id: "t3", type: "PROMOTED • INSTANT", title: "Join Community Payout Channel", desc: "Visit link & earn instant TT", reward: 25, url: "https://t.me/DargonGolden" },
-    { id: "t4", type: "PROMOTED • INSTANT", title: "Share Titan Airdrop Post", desc: "Open post & claim instant bonus", reward: 25, url: "https://t.me/nexora_mining" }
+    { id: "t1", type: "ONE TIME • SOCIAL", title: "Join Official Titan Channel", desc: "Join channel & claim instant bonus", reward: 150, url: "https://t.me/cryptominingmm0" },
+    { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check live TT/TON liquidity pool", reward: 75, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" },
+    { id: "t3", type: "PROMOTED • INSTANT", title: "Join Payout Updates Channel", desc: "Visit link & earn instant TT", reward: 50, url: "https://t.me/DargonGolden" }
   ];
 
-  // ==================== STATE MANAGEMENT ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_state")) || {
+  // ==================== LIVE DEDUST POOL STATE ====================
+  let poolData = {
+    tonReserve: 0,
+    ttReserve: 0,
+    poolAddress: "",
+    rateTTPerTon: 0,
+    loaded: false
+  };
+
+  async function fetchLiveDeDustRate() {
+    const badge = document.getElementById("liveRateBadge");
+    const statusText = document.getElementById("poolStatusText");
+    badge.textContent = "Fetching DeDust...";
+    try {
+      const res = await fetch("https://api.dedust.io/v2/pools");
+      const pools = await res.json();
+      const targetPool = pools.find(p =>
+        p.assets && p.assets.some(a => a.address === CONFIG.JETTON_ADDRESS) &&
+        p.assets.some(a => a.type === "native")
+      );
+      if (targetPool && targetPool.reserves) {
+        const isNativeFirst = targetPool.assets[0].type === "native";
+        const tonRes = Number(isNativeFirst ? targetPool.reserves[0] : targetPool.reserves[1]) / 1e9;
+        const ttRes = Number(isNativeFirst ? targetPool.reserves[1] : targetPool.reserves[0]) / 1e9;
+        if (tonRes > 0 && ttRes > 0) {
+          poolData = {
+            tonReserve: tonRes,
+            ttReserve: ttRes,
+            poolAddress: targetPool.address,
+            rateTTPerTon: ttRes / tonRes,
+            loaded: true
+          };
+          badge.textContent = `1 TON ≈ ${poolData.rateTTPerTon.toFixed(2)} TT`;
+          statusText.textContent = `Live Pool (${tonRes.toFixed(1)} TON Liq)`;
+          recalcSwap();
+          return;
+        }
+      }
+      badge.textContent = "Pool Low Liq";
+      statusText.textContent = "DeDust Pool Synced";
+    } catch (e) {
+      badge.textContent = "Retry Sync";
+    }
+  }
+
+  // ==================== USER STATE & FIREBASE SYNC ====================
+  let state = JSON.parse(localStorage.getItem("titan_tt_v2")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
@@ -648,20 +641,15 @@
     streakDay: 1,
     lastStreakDate: "",
     completedTasks: [],
+    referredBy: "",
     invited: 0,
     qualified: 0,
     refEarned: 0,
-    activities: [
-      { title: "Welcome Bonus Ready", date: new Date().toLocaleDateString(), amount: "+0 TT" }
-    ]
+    activities: []
   };
 
-  let swapState = {
-    payAsset: "TON", // TON or TT
-    slippage: 0.5
-  };
+  let swapState = { payAsset: "TON", slippage: 1 };
 
-  // Telegram WebApp Init
   const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
@@ -670,8 +658,44 @@
     tg.setBackgroundColor("#09090b");
   }
   const tgUser = tg?.initDataUnsafe?.user || { id: 5330848428, first_name: "Titan Miner", username: "miner" };
+  const startParam = tg?.initDataUnsafe?.start_param || new URLSearchParams(window.location.search).get("startapp") || "";
 
-  // TON Connect Init
+  async function syncWithFirebase() {
+    if (!CONFIG.FIREBASE_URL || !tgUser.id) return;
+    try {
+      const res = await fetch(`${CONFIG.FIREBASE_URL}/users/${tgUser.id}.json`);
+      const remote = await res.json();
+      if (remote) {
+        state = { ...state, ...remote };
+      } else if (startParam.startsWith("ref_")) {
+        const referrerId = startParam.replace("ref_", "");
+        if (referrerId && referrerId !== String(tgUser.id)) {
+          state.referredBy = referrerId;
+          // Increment Referrer's Invited Count
+          const refRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${referrerId}/invited.json`);
+          const curInv = (await refRes.json()) || 0;
+          await fetch(`${CONFIG.FIREBASE_URL}/users/${referrerId}/invited.json`, {
+            method: "PUT",
+            body: JSON.stringify(curInv + 1)
+          });
+        }
+      }
+      saveState();
+      renderAll();
+    } catch (e) {}
+  }
+
+  function saveState() {
+    localStorage.setItem("titan_tt_v2", JSON.stringify(state));
+    if (CONFIG.FIREBASE_URL && tgUser.id) {
+      fetch(`${CONFIG.FIREBASE_URL}/users/${tgUser.id}.json`, {
+        method: "PATCH",
+        body: JSON.stringify(state)
+      }).catch(() => {});
+    }
+  }
+
+  // ==================== TON CONNECT ====================
   let tonConnectUI;
   try {
     tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -680,35 +704,35 @@
     tonConnectUI.onStatusChange(wallet => {
       if (wallet && wallet.account) {
         state.walletAddress = wallet.account.address;
-        saveState();
         fetchOnChainBalances(wallet.account.address);
       } else {
         state.walletAddress = "";
-        saveState();
       }
+      saveState();
       renderAll();
     });
-  } catch (e) { console.warn("TON Connect init skipped in preview"); }
-
-  function saveState() {
-    localStorage.setItem("titan_tt_state", JSON.stringify(state));
-    if (CONFIG.FIREBASE_URL && tgUser.id) {
-      fetch(`${CONFIG.FIREBASE_URL}/users/${tgUser.id}.json`, {
-        method: "PUT",
-        body: JSON.stringify(state)
-      }).catch(() => {});
-    }
-  }
+  } catch (e) {}
 
   function showToast(msg) {
     const t = document.getElementById("toast");
     t.textContent = msg;
     t.classList.remove("hidden");
-    setTimeout(() => t.classList.add("hidden"), 2600);
+    setTimeout(() => t.classList.add("hidden"), 2800);
   }
 
-  // ==================== MINING LOOP (24H CAP) ====================
+  // ==================== MINING & LEVEL AUTO-CALC ====================
+  function recalculateLevel() {
+    let highest = 1;
+    for (const l of LEVELS) {
+      if (state.onChainTT >= l.holdReq || state.qualified >= l.refReq) {
+        highest = l.lv;
+      }
+    }
+    state.level = highest;
+  }
+
   function getCurrentMiningStats() {
+    recalculateLevel();
     const lvObj = LEVELS[state.level - 1] || LEVELS[0];
     const hourly = lvObj.daily / 24;
     const elapsedSec = Math.max(0, (Date.now() - state.cycleStart) / 1000);
@@ -730,29 +754,41 @@
     }
   }, 1000);
 
-  // ==================== VERIFY & CLAIM ====================
+  // ==================== VERIFY & CLAIM + 5% REF COMMISSION ====================
   async function verifyWalletAction() {
-    if (!state.walletAddress) {
-      await connectOrReconnectWallet();
-      return;
+    if (!state.walletAddress) return connectOrReconnectWallet();
+    if (state.verified) return showToast("✅ Wallet already verified!");
+
+    if (CONFIG.ADMIN_WALLET.includes("...")) {
+      return showToast("⚠️ Admin Wallet Address မထည့်ရသေးပါ");
     }
-    if (state.verified) {
-      showToast("✅ Wallet already verified!");
-      return;
-    }
+
     try {
-      if (tonConnectUI) {
-        const tx = {
-          validUntil: Math.floor(Date.now() / 1000) + 300,
-          messages: [{
-            address: CONFIG.ADMIN_WALLET,
-            amount: String(CONFIG.VERIFY_TON_AMOUNT * 1e9)
-          }]
-        };
-        await tonConnectUI.sendTransaction(tx);
-      }
+      await tonConnectUI.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 300,
+        messages: [{
+          address: CONFIG.ADMIN_WALLET,
+          amount: String(Math.round(CONFIG.VERIFY_TON_AMOUNT * 1e9))
+        }]
+      });
       state.verified = true;
       state.activities.unshift({ title: "Wallet Verified (0.05 TON)", date: new Date().toLocaleDateString(), amount: "Verified" });
+
+      // Credit Referrer Qualified + 100 TT Instant Bonus
+      if (state.referredBy && CONFIG.FIREBASE_URL) {
+        const rRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`);
+        const rData = await rRes.json();
+        if (rData) {
+          await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`, {
+            method: "PATCH",
+            body: JSON.stringify({
+              qualified: (rData.qualified || 0) + 1,
+              appBalance: (rData.appBalance || 0) + 100,
+              refEarned: (rData.refEarned || 0) + 100
+            })
+          });
+        }
+      }
       saveState();
       renderAll();
       showToast("🛡️ Wallet Verified Successfully!");
@@ -762,35 +798,38 @@
   }
 
   async function handleClaimOrVerify() {
-    if (!state.verified) {
-      await verifyWalletAction();
-      return;
-    }
+    if (!state.verified) return verifyWalletAction();
     const { mined } = getCurrentMiningStats();
-    if (mined < 0.01) {
-      showToast("⏳ Wait for mining balance to accumulate");
-      return;
-    }
+    if (mined < 0.01) return showToast("⏳ Wait for mining balance to accumulate");
+
     state.appBalance += mined;
     state.cycleStart = Date.now();
-    state.activities.unshift({
-      title: "Mining Cycle Claim",
-      date: new Date().toLocaleDateString(),
-      amount: `+${mined.toFixed(2)} TT`
-    });
+    state.activities.unshift({ title: "Mining Cycle Claim", date: new Date().toLocaleDateString(), amount: `+${mined.toFixed(2)} TT` });
+
+    // 5% Commission to Referrer on every claim
+    if (state.referredBy && CONFIG.FIREBASE_URL) {
+      const comm = mined * 0.05;
+      const rRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`);
+      const rData = await rRes.json();
+      if (rData) {
+        await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            appBalance: (rData.appBalance || 0) + comm,
+            refEarned: (rData.refEarned || 0) + comm
+          })
+        });
+      }
+    }
     saveState();
     renderAll();
     showToast(`🎉 Claimed +${mined.toFixed(2)} TT!`);
   }
 
-  // ==================== INSTANT SWITCH (MARKET SWAP) ====================
+  // ==================== DIRECT IN-APP DEDUST SWAP (BUY TT) ====================
   function togglePayAsset() {
     swapState.payAsset = swapState.payAsset === "TON" ? "TT" : "TON";
     recalcSwap();
-  }
-
-  function flipSwapDirection() {
-    togglePayAsset();
   }
 
   function setSlippage(val, btn) {
@@ -799,10 +838,11 @@
       b.className = "slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold";
     });
     btn.className = "slip-btn px-2.5 py-1 rounded-full bg-amber-400 text-black font-extrabold";
+    recalcSwap();
   }
 
   function setMaxSwap() {
-    const avail = swapState.payAsset === "TON" ? Math.max(0, state.tonBalance - 0.15) : state.onChainTT;
+    const avail = swapState.payAsset === "TON" ? Math.max(0, state.tonBalance - 0.4) : state.onChainTT;
     document.getElementById("swapInputAmount").value = avail.toFixed(2);
     recalcSwap();
   }
@@ -815,36 +855,69 @@
     document.getElementById("receiveAssetBtnText").textContent = isTonToTT ? "TT" : "TON";
     document.getElementById("swapAvailBalance").textContent = isTonToTT ? state.tonBalance.toFixed(2) : state.onChainTT.toFixed(2);
 
-    const out = isTonToTT ? (amt * CONFIG.TT_PER_TON_RATE) : (amt / CONFIG.TT_PER_TON_RATE);
+    // Constant Product Formula (x * y = k with 0.25% DeDust fee)
+    let out = 0;
+    if (poolData.loaded && amt > 0) {
+      const amtAfterDexFee = amt * 0.9975;
+      if (isTonToTT) {
+        out = (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee);
+      } else {
+        out = (poolData.tonReserve * amtAfterDexFee) / (poolData.ttReserve + amtAfterDexFee);
+      }
+    }
     document.getElementById("swapOutputAmount").textContent = out.toFixed(3);
     document.getElementById("totalSwapCost").textContent = isTonToTT
-      ? `${(amt + CONFIG.SERVICE_FEE_TON).toFixed(2)} TON`
-      : `${amt.toFixed(2)} TT + 0.1 TON`;
+      ? `${(amt + CONFIG.SERVICE_FEE_TON + 0.25).toFixed(2)} TON`
+      : `${amt.toFixed(2)} TT + 0.35 TON`;
   }
 
   async function executeInstantSwitch() {
-    if (!state.walletAddress) {
-      await connectOrReconnectWallet();
-      return;
-    }
+    if (!state.walletAddress) return connectOrReconnectWallet();
+    if (CONFIG.ADMIN_WALLET.includes("...")) return showToast("⚠️ Admin Wallet Address မထည့်ရသေးပါ");
+
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     if (amt <= 0) return showToast("Enter valid amount");
 
-    // Direct DeDust Switch with 0.1 TON App Service Fee
-    if (tonConnectUI && swapState.payAsset === "TON") {
+    if (swapState.payAsset === "TON") {
+      if (state.tonBalance < amt + 0.35) {
+        return showToast(`⚠️ Insufficient TON (Need ${(amt + 0.35).toFixed(2)} TON)`);
+      }
       try {
+        // Multi-message TON Connect Transaction:
+        // Msg 1: App Service Fee (0.1 TON) to Admin Wallet
+        // Msg 2: Swap TON + 0.25 TON Gas to DeDust Native Vault
+        const swapTonWithGasNano = BigInt(Math.round((amt + 0.25) * 1e9)).toString();
+        const appFeeNano = BigInt(Math.round(CONFIG.SERVICE_FEE_TON * 1e9)).toString();
+
         await tonConnectUI.sendTransaction({
           validUntil: Math.floor(Date.now() / 1000) + 300,
-          messages: [{
-            address: CONFIG.ADMIN_WALLET,
-            amount: String(Math.round(CONFIG.SERVICE_FEE_TON * 1e9))
-          }]
+          messages: [
+            {
+              address: CONFIG.ADMIN_WALLET,
+              amount: appFeeNano
+            },
+            {
+              address: CONFIG.DEDUST_NATIVE_VAULT,
+              amount: swapTonWithGasNano
+            }
+          ]
         });
+
+        state.activities.unshift({
+          title: `Swapped ${amt} TON → TT`,
+          date: new Date().toLocaleDateString(),
+          amount: `+${document.getElementById("swapOutputAmount").textContent} TT`
+        });
+        saveState();
+        renderAll();
+        showToast("✅ Swap Sent! Updating balance...");
+        setTimeout(() => fetchOnChainBalances(state.walletAddress), 6000);
       } catch (e) {
-        return showToast("Swap cancelled");
+        showToast("❌ Swap cancelled");
       }
+    } else {
+      window.open(`https://dedust.io/swap/${CONFIG.JETTON_ADDRESS}/TON`, "_blank");
     }
-    window.open(`https://dedust.io/swap/TON/${CONFIG.JETTON_ADDRESS}`, "_blank");
   }
 
   function copyContract() {
@@ -852,7 +925,7 @@
     showToast("📋 TT Contract Address Copied!");
   }
 
-  // ==================== TASKS & STREAK ====================
+  // ==================== TASKS, STREAK & WALLET ====================
   function completeTask(id, reward, url, title) {
     window.open(url, "_blank");
     if (!state.completedTasks.includes(id)) {
@@ -867,44 +940,32 @@
 
   function claimDailyStreak() {
     const today = new Date().toDateString();
-    if (state.lastStreakDate === today) {
-      return showToast("✅ Today's streak already claimed!");
-    }
+    if (state.lastStreakDate === today) return showToast("✅ Today's streak already claimed!");
     const bonus = 50 + (state.streakDay * 5);
     state.appBalance += bonus;
     state.lastStreakDate = today;
     state.streakDay = state.streakDay >= 30 ? 1 : state.streakDay + 1;
-    state.activities.unshift({ title: `Daily Streak Bonus`, date: new Date().toLocaleDateString(), amount: `+${bonus} TT` });
+    state.activities.unshift({ title: "Daily Streak Bonus", date: new Date().toLocaleDateString(), amount: `+${bonus} TT` });
     saveState();
     renderAll();
     showToast(`🔥 Streak Claimed: +${bonus} TT!`);
   }
 
-  // ==================== WALLET & ON-CHAIN ====================
   async function connectOrReconnectWallet() {
-    if (tonConnectUI) {
-      await tonConnectUI.openModal();
-    } else {
-      showToast("Open inside Telegram to connect TON Wallet");
-    }
+    if (tonConnectUI) await tonConnectUI.openModal();
   }
 
   async function fetchOnChainBalances(addr) {
     try {
       const res = await fetch(`https://tonapi.io/v2/accounts/${addr}`);
       const data = await res.json();
-      if (data.balance) state.tonBalance = data.balance / 1e9;
+      if (data.balance) state.tonBalance = Number(data.balance) / 1e9;
 
       const jRes = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons/${CONFIG.JETTON_ADDRESS}`);
       const jData = await jRes.json();
       if (jData.balance) state.onChainTT = Number(jData.balance) / 1e9;
 
-      // Auto Level Check
-      LEVELS.forEach(l => {
-        if ((state.onChainTT >= l.holdReq || state.qualified >= l.refReq) && l.lv > state.level) {
-          state.level = l.lv;
-        }
-      });
+      recalculateLevel();
       saveState();
       renderAll();
     } catch (e) {}
@@ -912,33 +973,22 @@
 
   function requestWithdraw() {
     if (!state.verified) return showToast("🛡️ Verify wallet (0.05 TON) first!");
-    if (state.appBalance < CONFIG.MIN_WITHDRAW) {
-      return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW.toLocaleString()} TT`);
-    }
+    if (state.appBalance < CONFIG.MIN_WITHDRAW) return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW.toLocaleString()} TT`);
     const amt = state.appBalance;
     state.appBalance = 0;
-    state.activities.unshift({ title: "On-chain Withdrawal Queued", date: new Date().toLocaleDateString(), amount: `-${amt.toFixed(0)} TT` });
+    state.activities.unshift({ title: "Withdrawal Queued", date: new Date().toLocaleDateString(), amount: `-${amt.toFixed(0)} TT` });
     saveState();
     renderAll();
-    showToast("🚀 Withdrawal submitted to TON queue!");
+    showToast("🚀 Withdrawal submitted!");
   }
 
-  // ==================== REFERRALS & MODALS ====================
-  function getInviteUrl() {
-    return `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`;
-  }
-  function copyInviteLink() {
-    navigator.clipboard.writeText(getInviteUrl());
-    showToast("📋 Invite link copied!");
-  }
+  function getInviteUrl() { return `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`; }
+  function copyInviteLink() { navigator.clipboard.writeText(getInviteUrl()); showToast("📋 Invite link copied!"); }
   function shareInviteLink() {
-    const url = encodeURIComponent(getInviteUrl());
-    const text = encodeURIComponent("⚡ Mine TITAN (TT) on TON! Join my mining crew and earn daily Web3 rewards:");
-    window.open(`https://t.me/share/url?url=${url}&text=${text}`, "_blank");
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(getInviteUrl())}&text=${encodeURIComponent("⚡ Mine TITAN (TT) on TON! Join my crew:")}`, "_blank");
   }
   function submitAmbassador() {
-    const link = document.getElementById("ambLink").value.trim();
-    if (!link) return showToast("Enter your Telegram channel link");
+    if (!document.getElementById("ambLink").value.trim()) return showToast("Enter channel link");
     closeModal("ambassadorModal");
     showToast("👑 Ambassador application submitted!");
   }
@@ -963,77 +1013,63 @@
   // ==================== RENDER UI ====================
   function renderAll() {
     const { lvObj, hourly } = getCurrentMiningStats();
-    const nextLv = LEVELS[state.level] || LEVELS[LEVELS.length - 1];
+    const nextLv = LEVELS[Math.min(99, state.level)];
 
-    // Header & Profile
     document.getElementById("headerAvatar").textContent = (tgUser.first_name || "T")[0].toUpperCase();
     document.getElementById("headerLevelText").textContent = `Level ${state.level}`;
     document.getElementById("modalTgId").textContent = tgUser.id;
     document.getElementById("profName").textContent = tgUser.first_name || "Titan Miner";
     document.getElementById("profUser").textContent = tgUser.username ? `@${tgUser.username}` : `ID: ${tgUser.id}`;
     document.getElementById("profLv").textContent = state.level;
-    document.getElementById("profDaily").textContent = lvObj.daily;
+    document.getElementById("profLeague").textContent = lvObj.name;
+    document.getElementById("profDaily").textContent = lvObj.daily.toLocaleString();
     document.getElementById("profAppBal").textContent = state.appBalance.toFixed(2);
     document.getElementById("profChainHold").textContent = state.onChainTT.toFixed(2);
     document.getElementById("profCrew").textContent = `${state.qualified} / ${state.invited}`;
     document.getElementById("profVerifStatus").textContent = state.verified ? "Verified ✓" : "Unverified";
-    document.getElementById("profVerifStatus").className = state.verified ? "text-base font-extrabold text-emerald-400 mt-1" : "text-base font-extrabold text-amber-400 mt-1";
 
-    // Balances & Rates
     document.getElementById("appBalanceDisplay").textContent = state.appBalance.toFixed(4);
     document.getElementById("walletAppBal").textContent = state.appBalance.toFixed(4);
     document.getElementById("withdrawProgressBar").style.width = Math.min(100, (state.appBalance / CONFIG.MIN_WITHDRAW) * 100) + "%";
     document.getElementById("miningLevelNum").textContent = state.level;
-    document.getElementById("dailyRateText").textContent = lvObj.daily;
+    document.getElementById("badgeLvTop").textContent = state.level;
+    document.getElementById("dailyRateText").textContent = lvObj.daily.toLocaleString();
     document.getElementById("hourlyRateText").textContent = hourly.toFixed(2);
     document.getElementById("gridHourly").textContent = hourly.toFixed(2);
-    document.getElementById("gridDaily").textContent = lvObj.daily;
-    document.getElementById("gridLeague").textContent = lvObj.name.split(" ")[0];
-    document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • ${lvObj.name}`;
+    document.getElementById("gridDaily").textContent = lvObj.daily.toLocaleString();
+    document.getElementById("gridLvCard").textContent = state.level;
+    document.getElementById("gridLeague").textContent = getLeagueName(state.level);
+    document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • Tap for 1-100`;
 
-    // Verification Button States
     const claimBtn = document.getElementById("mainClaimBtn");
     if (state.verified) {
       document.getElementById("verifyBanner").classList.add("hidden");
       document.getElementById("walletVerifyCard").classList.add("hidden");
-      claimBtn.innerHTML = "<span>⚡ Claim Mined TT to Balance</span>";
-    } else {
-      claimBtn.innerHTML = "<span>🛡️ Verify Wallet (0.05 TON) & Claim</span>";
+      claimBtn.textContent = "⚡ Claim Mined TT to Balance";
     }
 
-    // Next Level Card
     document.getElementById("nextLvBadge").textContent = state.level;
     document.getElementById("nextLvTitle").textContent = nextLv.lv;
-    document.getElementById("nextLvRate").textContent = nextLv.daily;
+    document.getElementById("nextLvRate").textContent = nextLv.daily.toLocaleString();
     document.getElementById("pathAHold").textContent = state.onChainTT.toFixed(0);
-    document.getElementById("pathAReq").textContent = nextLv.holdReq;
+    document.getElementById("pathAReq").textContent = nextLv.holdReq.toLocaleString();
     document.getElementById("pathBFriends").textContent = state.qualified;
     document.getElementById("pathBReq").textContent = nextLv.refReq;
 
-    // Streak
-    document.getElementById("streakDay").textContent = state.streakDay;
-    if (state.lastStreakDate === new Date().toDateString()) {
-      document.getElementById("streakStatus").textContent = "Claimed Today ✓";
-    }
-
-    // Wallet Tab
     if (state.walletAddress) {
-      const short = state.walletAddress.slice(0, 5) + "..." + state.walletAddress.slice(-4);
       document.getElementById("walletStatusDot").className = "w-2 h-2 rounded-full bg-emerald-400";
       document.getElementById("walletStatusText").textContent = "Wallet • Connected";
-      document.getElementById("shortWalletAddr").textContent = short;
-      document.getElementById("swapActionBtn").textContent = "⇅ Instant Switch on DeDust";
+      document.getElementById("shortWalletAddr").textContent = state.walletAddress.slice(0, 5) + "..." + state.walletAddress.slice(-4);
+      document.getElementById("swapActionBtn").textContent = "⇅ Buy / Switch TT Now";
     }
     document.getElementById("onChainTTBalance").textContent = state.onChainTT.toFixed(4);
     document.getElementById("onChainTonBalance").textContent = state.tonBalance.toFixed(2);
 
-    // Friends Tab
     document.getElementById("inviteLinkBox").textContent = getInviteUrl();
     document.getElementById("refInvitedCount").textContent = state.invited;
     document.getElementById("refQualifiedCount").textContent = state.qualified;
-    document.getElementById("refEarnedCount").textContent = state.refEarned.toFixed(0);
+    document.getElementById("refEarnedCount").textContent = state.refEarned.toFixed(1);
 
-    // Tasks List
     document.getElementById("tasksContainer").innerHTML = DEFAULT_TASKS.map(t => {
       const done = state.completedTasks.includes(t.id);
       return `
@@ -1044,39 +1080,31 @@
             <div class="text-xs text-zinc-400">${t.desc}</div>
             <div class="text-xs font-extrabold text-amber-300 pt-1">+${t.reward} TT</div>
           </div>
-          <button onclick="completeTask('${t.id}', ${t.reward}, '${t.url}', '${t.title}')"
-            class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${done ? 'bg-white/10 text-emerald-400' : 'gold-btn'}">
+          <button onclick="completeTask('${t.id}', ${t.reward}, '${t.url}', '${t.title}')" class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${done ? 'bg-white/10 text-emerald-400' : 'gold-btn'}">
             ${done ? 'Claimed ✓' : 'Go'}
           </button>
-        </div>
-      `;
+        </div>`;
     }).join("");
 
-    // Levels Matrix
     document.getElementById("levelsMatrixList").innerHTML = LEVELS.map(l => `
       <div class="p-3 rounded-2xl border ${l.lv === state.level ? 'gold-card-highlight' : 'bg-white/5 border-white/10'} flex justify-between items-center text-xs">
         <div>
           <div class="font-extrabold text-white">Lv.${l.lv} • ${l.name}</div>
-          <div class="text-zinc-400">Hold ${l.holdReq} TT OR ${l.refReq} Verified Friends</div>
+          <div class="text-zinc-400">Hold ${l.holdReq.toLocaleString()} TT OR ${l.refReq} Verified Friends</div>
         </div>
-        <div class="font-extrabold text-amber-400">${l.daily} TT/d</div>
-      </div>
-    `).join("");
+        <div class="font-extrabold text-amber-400">${l.daily.toLocaleString()} TT/d</div>
+      </div>`).join("");
 
-    // Activities List
     document.getElementById("activityList").innerHTML = state.activities.slice(0, 10).map(a => `
       <div class="gold-card rounded-2xl p-3 flex items-center justify-between text-xs">
-        <div>
-          <div class="font-bold text-white">${a.title}</div>
-          <div class="text-[11px] text-zinc-500">${a.date}</div>
-        </div>
+        <div><div class="font-bold text-white">${a.title}</div><div class="text-[11px] text-zinc-500">${a.date}</div></div>
         <div class="font-extrabold text-amber-400">${a.amount}</div>
-      </div>
-    `).join("");
+      </div>`).join("");
   }
 
   renderAll();
-  recalcSwap();
+  fetchLiveDeDustRate();
+  syncWithFirebase();
 </script>
 </body>
 </html>
