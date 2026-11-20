@@ -50,6 +50,18 @@
 </head>
 <body>
 
+  <!-- MULTI-ACCOUNT / BAN WARNING OVERLAY -->
+  <div id="multiBlockOverlay" class="hidden fixed inset-0 z-50 bg-[#09090b]/95 backdrop-blur-md flex items-center justify-center p-6 text-center">
+    <div class="gold-card-highlight rounded-3xl p-6 max-w-sm space-y-4">
+      <div class="w-14 h-14 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 text-2xl flex items-center justify-center mx-auto">🛡️</div>
+      <h2 class="text-xl font-extrabold text-white">Security Alert</h2>
+      <p id="multiBlockReason" class="text-xs text-zinc-300 leading-relaxed">
+        Multiple accounts detected on the same Device / IP address. Only 1 primary account is allowed per device.
+      </p>
+      <div class="text-[11px] font-mono bg-black/50 p-2.5 rounded-xl text-zinc-400" id="deviceInfoBadge">Device Check Active</div>
+    </div>
+  </div>
+
   <!-- TOP HEADER -->
   <header class="sticky top-0 z-30 backdrop-blur-md bg-[#09090b]/85 border-b border-amber-500/15 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-2.5">
@@ -158,11 +170,11 @@
         </div>
 
         <div id="verifyBanner" class="rounded-2xl bg-amber-500/10 border border-amber-400/25 p-3 flex items-center gap-2.5 text-xs text-amber-200">
-          <span>🔒 One-time wallet verification (<b>0.05 TON</b>) required to claim mined TT</span>
+          <span>🔒 One-time wallet verification (<b>0.1 TON</b>) required to claim mined TT</span>
         </div>
 
         <button id="mainClaimBtn" onclick="handleClaimOrVerify()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
-          🛡️ Verify Wallet (0.05 TON) & Claim
+          🛡️ Verify Wallet (0.1 TON) & Claim
         </button>
       </div>
 
@@ -213,7 +225,7 @@
             <span class="font-bold text-white"><span id="pathAHold">0</span> / <span id="pathAReq">60</span> TT</span>
           </div>
           <div class="bg-white/5 rounded-xl p-2.5 flex justify-between items-center text-xs">
-            <span class="text-zinc-300">Path B • Qualified Friends (0.05 TON)</span>
+            <span class="text-zinc-300">Path B • Qualified Friends (0.1 TON)</span>
             <span class="font-bold text-amber-400"><span id="pathBFriends">0</span> / <span id="pathBReq">5</span></span>
           </div>
         </div>
@@ -341,7 +353,7 @@
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
             <b>from your active friends' mining</b><br>
-            +100 TT instant bonus per 0.05 TON verified friend!
+            +100 TT instant bonus per 0.1 TON verified friend!
           </div>
         </div>
       </div>
@@ -370,7 +382,7 @@
           <button onclick="shareInviteLink()" class="py-3 rounded-xl gold-btn text-xs">✈️ Invite friends</button>
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
-        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.05 TON</b> wallet verification. Both instant bonus + 5% mining commission are credited automatically.</p>
+        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.1 TON</b> wallet verification. Multi-account/same-device referrals are automatically filtered.</p>
       </div>
 
       <div onclick="openModal('ambassadorModal')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
@@ -434,9 +446,9 @@
 
       <div id="walletVerifyCard" class="gold-card rounded-3xl p-4 space-y-2.5">
         <h3 class="font-extrabold text-sm text-white">One-time wallet verification</h3>
-        <p class="text-xs text-zinc-400">A new wallet is verified once (0.05 TON). Reconnecting is free.</p>
+        <p class="text-xs text-zinc-400">A new wallet is verified once (0.1 TON). Reconnecting is free.</p>
         <button onclick="verifyWalletAction()" class="w-full py-3 rounded-xl gold-btn text-xs">
-          🛡️ Verify wallet • 0.05 TON
+          🛡️ Verify wallet • 0.1 TON
         </button>
       </div>
 
@@ -494,7 +506,11 @@
         <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">👥 Qualified Crew</span><div class="text-base font-extrabold text-white mt-1" id="profCrew">0 / 0</div></div>
         <div class="bg-white/5 rounded-2xl p-3"><span class="text-zinc-400">🛡️ Verification</span><div id="profVerifStatus" class="text-base font-extrabold text-amber-400 mt-1">Unverified</div></div>
       </div>
-      <button onclick="closeModal('profileModal'); verifyWalletAction();" class="w-full py-3.5 rounded-2xl gold-btn text-sm">🛡️ Verify Wallet • 0.05 TON</button>
+      <div class="bg-white/5 rounded-xl p-2.5 text-[11px] flex justify-between text-zinc-400">
+        <span>Device Guard: <b id="profSecurityTag" class="text-emerald-400">Verified Unique</b></span>
+        <span id="profIpTag" class="font-mono">IP Checked</span>
+      </div>
+      <button onclick="closeModal('profileModal'); verifyWalletAction();" class="w-full py-3.5 rounded-2xl gold-btn text-sm">🛡️ Verify Wallet • 0.1 TON</button>
     </div>
   </div>
 
@@ -532,7 +548,7 @@
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
         <div class="font-bold text-amber-400">ℹ️ Welcome to TITAN (TT) • Levels 1-100 Active!</div>
-        <p class="text-zinc-300">Hold TT on-chain or invite verified friends to climb up to Level 100 (15,000 TT/day).</p>
+        <p class="text-zinc-300">Verify your TON wallet (0.1 TON once) to unlock claims & referral rewards.</p>
       </div>
     </div>
   </div>
@@ -545,15 +561,16 @@
     COIN_NAME: "Titan",
     COIN_SYMBOL: "TT",
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
-    // အောက်ပါ ADMIN_WALLET နေရာတွင် သင့် TON Wallet Address အပြည့်အစုံ (စာလုံး ၄၈ လုံး) အစားထိုးထည့်ပါ
-    ADMIN_WALLET: "PUT_YOUR_FULL_48_CHAR_TON_WALLET_ADDRESS_HERE",
+    ADMIN_WALLET: "UQAPQ6UWezq6l_wHjaNEOlTu6Ux6BHSXeYaEDyoDfsuLE3Yz",
     DEDUST_NATIVE_VAULT: "EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_",
-    BOT_USERNAME: "PUT_YOUR_BOT_USERNAME_HERE",
-    VERIFY_TON_AMOUNT: 0.05,
+    BOT_USERNAME: "TitanMine_bot",
+    VERIFY_TON_AMOUNT: 0.1,
     SERVICE_FEE_TON: 0.1,
     MIN_WITHDRAW: 10000,
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
-    DB_NODE: "titan_tt_users"
+    DB_NODE: "titan_tt_users",
+    TASKS_NODE: "titan_tt_tasks",
+    SECURITY_NODE: "titan_tt_security"
   };
 
   // ==================== GENERATE LEVELS 1 TO 100 ====================
@@ -575,11 +592,125 @@
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
 
-  const DEFAULT_TASKS = [
+  let dynamicTasks = [
     { id: "t1", type: "ONE TIME • SOCIAL", title: "Join Official Titan Channel", desc: "Join channel & claim instant bonus", reward: 150, url: "https://t.me/cryptominingmm0" },
-    { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check live TT/TON liquidity pool", reward: 75, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" },
-    { id: "t3", type: "PROMOTED • INSTANT", title: "Join Payout Updates Channel", desc: "Visit link & earn instant TT", reward: 50, url: "https://t.me/DargonGolden" }
+    { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check live TT/TON liquidity pool", reward: 75, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
   ];
+
+  // ==================== DEVICE FINGERPRINT & IP ANTI-CHEAT ====================
+  function generateDeviceFingerprint() {
+    try {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.textBaseline = "top";
+      ctx.font = "14px Arial";
+      ctx.fillText("TITAN_TT_GUARD_2026", 2, 2);
+      const raw = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + "x" + screen.height + "x" + screen.colorDepth,
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || 0,
+        canvas.toDataURL().slice(-40)
+      ].join("|");
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      return "DEV_" + Math.abs(hash).toString(16).toUpperCase();
+    } catch (e) {
+      return "DEV_UNKNOWN";
+    }
+  }
+
+  async function runAntiCheatSecurity(uid) {
+    const deviceId = generateDeviceFingerprint();
+    let userIp = "0.0.0.0";
+    try {
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipJson = await ipRes.json();
+      userIp = ipJson.ip || "0.0.0.0";
+    } catch (e) {}
+
+    const safeIpKey = userIp.replace(/\./g, "_");
+    state.deviceId = deviceId;
+    state.lastIp = userIp;
+
+    document.getElementById("profIpTag").textContent = `IP: ${userIp}`;
+    document.getElementById("deviceInfoBadge").textContent = `ID: ${deviceId} • IP: ${userIp}`;
+
+    if (!CONFIG.FIREBASE_URL || !uid) return;
+
+    try {
+      // Check Device Registry
+      const devUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.SECURITY_NODE}/devices/${deviceId}.json`;
+      const devRes = await fetch(devUrl);
+      const devRecord = await devRes.json();
+
+      // Check IP Registry
+      const ipUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.SECURITY_NODE}/ips/${safeIpKey}.json`;
+      const ipRes = await fetch(ipUrl);
+      const ipRecord = await ipRes.json();
+
+      let isMulti = false;
+      let multiReason = "";
+
+      if (devRecord && devRecord.primaryUid && String(devRecord.primaryUid) !== String(uid)) {
+        isMulti = true;
+        multiReason = `Device (${deviceId}) is already bound to Account #${devRecord.primaryUid}. Multi-accounting is blocked.`;
+      } else if (!devRecord) {
+        await fetch(devUrl, {
+          method: "PUT",
+          body: JSON.stringify({ primaryUid: String(uid), ip: userIp, createdAt: Date.now() })
+        });
+      }
+
+      // Allow max 2 accounts per shared Wi-Fi/Mobile IP, block 3rd+
+      const existingUids = (ipRecord && ipRecord.uids) ? ipRecord.uids : [];
+      if (!existingUids.includes(String(uid))) {
+        if (existingUids.length >= 2) {
+          isMulti = true;
+          multiReason = `Too many accounts (${existingUids.length + 1}) detected on IP ${userIp}.`;
+        } else {
+          existingUids.push(String(uid));
+          await fetch(ipUrl, {
+            method: "PUT",
+            body: JSON.stringify({ uids: existingUids, updatedAt: Date.now() })
+          });
+        }
+      }
+
+      if (isMulti || state.banned) {
+        state.isMultiFlagged = true;
+        document.getElementById("profSecurityTag").textContent = "Multi Flagged ⚠️";
+        document.getElementById("profSecurityTag").className = "text-rose-400 font-bold";
+        if (state.banned) {
+          document.getElementById("multiBlockReason").textContent = "Your account has been suspended by Admin for policy violation.";
+          document.getElementById("multiBlockOverlay").classList.remove("hidden");
+        }
+      }
+      saveState();
+    } catch (e) {}
+  }
+
+  // ==================== FETCH DYNAMIC TASKS FROM FIREBASE ====================
+  async function loadDynamicTasks() {
+    if (!CONFIG.FIREBASE_URL) return;
+    try {
+      const res = await fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.TASKS_NODE}.json`);
+      const data = await res.json();
+      if (data && typeof data === "object") {
+        const list = Object.entries(data)
+          .filter(([_, v]) => v && v.title)
+          .map(([id, v]) => ({ id, ...v }));
+        if (list.length > 0) {
+          dynamicTasks = list;
+          renderAll();
+        }
+      }
+    } catch (e) {}
+  }
 
   // ==================== LIVE DEDUST POOL RATE ====================
   let poolData = { tonReserve: 0, ttReserve: 0, rateTTPerTon: 0, loaded: false };
@@ -614,12 +745,16 @@
   }
 
   // ==================== USER STATE & FIREBASE SYNC ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v3")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v4")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
     walletAddress: "",
     verified: false,
+    banned: false,
+    isMultiFlagged: false,
+    deviceId: "",
+    lastIp: "",
     level: 1,
     cycleStart: Date.now(),
     streakDay: 1,
@@ -664,13 +799,14 @@
           });
         }
       }
+      await runAntiCheatSecurity(tgUser.id);
       saveState();
       renderAll();
     } catch (e) {}
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v3", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v4", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -737,23 +873,24 @@
     }
   }, 1000);
 
+  // ==================== 0.1 TON VERIFY & CLAIM ====================
   async function verifyWalletAction() {
     if (!state.walletAddress) return connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
-    if (CONFIG.ADMIN_WALLET.startsWith("PUT_")) return showToast("⚠️ ADMIN_WALLET မထည့်ရသေးပါ");
 
     try {
       await tonConnectUI.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 300,
         messages: [{
           address: CONFIG.ADMIN_WALLET,
-          amount: String(Math.round(CONFIG.VERIFY_TON_AMOUNT * 1e9))
+          amount: String(Math.round(CONFIG.VERIFY_TON_AMOUNT * 1e9)) // 0.1 TON = 100,000,000 nanoTON
         }]
       });
       state.verified = true;
-      state.activities.unshift({ title: "Wallet Verified (0.05 TON)", date: new Date().toLocaleDateString(), amount: "Verified" });
+      state.activities.unshift({ title: "Wallet Verified (0.1 TON)", date: new Date().toLocaleDateString(), amount: "Verified" });
 
-      if (state.referredBy && CONFIG.FIREBASE_URL) {
+      // Credit Referrer ONLY if not flagged as Multi-Account
+      if (state.referredBy && CONFIG.FIREBASE_URL && !state.isMultiFlagged) {
         const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
         const rRes = await fetch(refUrl);
         const rData = await rRes.json();
@@ -770,7 +907,7 @@
       }
       saveState();
       renderAll();
-      showToast("🛡️ Wallet Verified Successfully!");
+      showToast("🛡️ Wallet Verified (0.1 TON)!");
     } catch (err) {
       showToast("❌ Verification cancelled");
     }
@@ -778,6 +915,7 @@
 
   async function handleClaimOrVerify() {
     if (!state.verified) return verifyWalletAction();
+    if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Claims disabled");
     const { mined } = getCurrentMiningStats();
     if (mined < 0.01) return showToast("⏳ Wait for mining balance to accumulate");
 
@@ -785,7 +923,7 @@
     state.cycleStart = Date.now();
     state.activities.unshift({ title: "Mining Cycle Claim", date: new Date().toLocaleDateString(), amount: `+${mined.toFixed(2)} TT` });
 
-    if (state.referredBy && CONFIG.FIREBASE_URL) {
+    if (state.referredBy && CONFIG.FIREBASE_URL && !state.isMultiFlagged) {
       const comm = mined * 0.05;
       const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
       const rRes = await fetch(refUrl);
@@ -805,6 +943,7 @@
     showToast(`🎉 Claimed +${mined.toFixed(2)} TT!`);
   }
 
+  // ==================== SWAP ====================
   function togglePayAsset() {
     swapState.payAsset = swapState.payAsset === "TON" ? "TT" : "TON";
     recalcSwap();
@@ -848,8 +987,6 @@
 
   async function executeInstantSwitch() {
     if (!state.walletAddress) return connectOrReconnectWallet();
-    if (CONFIG.ADMIN_WALLET.startsWith("PUT_")) return showToast("⚠️ ADMIN_WALLET မထည့်ရသေးပါ");
-
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     if (amt <= 0) return showToast("Enter valid amount");
 
@@ -895,7 +1032,7 @@
     window.open(url, "_blank");
     if (!state.completedTasks.includes(id)) {
       state.completedTasks.push(id);
-      state.appBalance += reward;
+      state.appBalance += Number(reward);
       state.activities.unshift({ title: `Mission: ${title}`, date: new Date().toLocaleDateString(), amount: `+${reward} TT` });
       saveState();
       renderAll();
@@ -937,7 +1074,8 @@
   }
 
   function requestWithdraw() {
-    if (!state.verified) return showToast("🛡️ Verify wallet (0.05 TON) first!");
+    if (!state.verified) return showToast("🛡️ Verify wallet (0.1 TON) first!");
+    if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Withdrawals locked");
     if (state.appBalance < CONFIG.MIN_WITHDRAW) return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW.toLocaleString()} TT`);
     const amt = state.appBalance;
     state.appBalance = 0;
@@ -1034,17 +1172,18 @@
     document.getElementById("refQualifiedCount").textContent = state.qualified;
     document.getElementById("refEarnedCount").textContent = state.refEarned.toFixed(1);
 
-    document.getElementById("tasksContainer").innerHTML = DEFAULT_TASKS.map(t => {
+    document.getElementById("tasksContainer").innerHTML = dynamicTasks.map(t => {
       const done = state.completedTasks.includes(t.id);
+      const safeTitle = String(t.title).replace(/'/g, "");
       return `
         <div class="gold-card rounded-2xl p-4 flex items-center justify-between gap-3">
           <div class="space-y-1">
-            <div class="text-[10px] font-bold text-amber-400">${t.type}</div>
+            <div class="text-[10px] font-bold text-amber-400">${t.type || 'PROMOTED • TASK'}</div>
             <div class="font-extrabold text-sm text-white">${t.title}</div>
-            <div class="text-xs text-zinc-400">${t.desc}</div>
+            <div class="text-xs text-zinc-400">${t.desc || 'Complete mission & earn TT'}</div>
             <div class="text-xs font-extrabold text-amber-300 pt-1">+${t.reward} TT</div>
           </div>
-          <button onclick="completeTask('${t.id}', ${t.reward}, '${t.url}', '${t.title}')" class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${done ? 'bg-white/10 text-emerald-400' : 'gold-btn'}">
+          <button onclick="completeTask('${t.id}', ${t.reward}, '${t.url}', '${safeTitle}')" class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${done ? 'bg-white/10 text-emerald-400' : 'gold-btn'}">
             ${done ? 'Claimed ✓' : 'Go'}
           </button>
         </div>`;
@@ -1068,6 +1207,7 @@
 
   renderAll();
   fetchLiveDeDustRate();
+  loadDynamicTasks();
   syncWithFirebase();
 </script>
 </body>
