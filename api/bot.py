@@ -1,13 +1,13 @@
 import os
-import json
 import httpx
 from fastapi import FastAPI, Request
 
 app = FastAPI()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-WEBAPP_URL = os.getenv("WEBAPP_URL", "https://titanmine-mocha.vercel.app")
-FIREBASE_URL = os.getenv("FIREBASE_URL", "")
+WEBAPP_URL = os.getenv("WEBAPP_URL", "https://titan-mine.vercel.app")
+FIREBASE_URL = os.getenv("FIREBASE_URL", "https://adpro-bot-default-rtdb.firebaseio.com")
+DB_NODE = "titan_tt_users"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
@@ -32,11 +32,11 @@ async def telegram_webhook(req: Request):
     if text.startswith("/start"):
         parts = text.split()
         ref_id = parts[1].replace("ref_", "") if len(parts) > 1 and parts[1].startswith("ref_") else ""
+        base = f"{FIREBASE_URL}/{DB_NODE}"
 
-        # Register user & track referral in Firebase
         if FIREBASE_URL:
             async with httpx.AsyncClient(timeout=10) as client:
-                u_res = await client.get(f"{FIREBASE_URL}/users/{user_id}.json")
+                u_res = await client.get(f"{base}/{user_id}.json")
                 if u_res.json() is None:
                     new_user = {
                         "appBalance": 0,
@@ -45,12 +45,12 @@ async def telegram_webhook(req: Request):
                         "refEarned": 0,
                         "referredBy": ref_id if ref_id != user_id else ""
                     }
-                    await client.put(f"{FIREBASE_URL}/users/{user_id}.json", json=new_user)
+                    await client.put(f"{base}/{user_id}.json", json=new_user)
 
                     if ref_id and ref_id != user_id:
-                        r_res = await client.get(f"{FIREBASE_URL}/users/{ref_id}/invited.json")
+                        r_res = await client.get(f"{base}/{ref_id}/invited.json")
                         cur_inv = r_res.json() or 0
-                        await client.put(f"{FIREBASE_URL}/users/{ref_id}/invited.json", json=cur_inv + 1)
+                        await client.put(f"{base}/{ref_id}/invited.json", json=cur_inv + 1)
                         await tg_post("sendMessage", {
                             "chat_id": int(ref_id),
                             "text": f"👥 <b>New Referral Joined!</b>\n<b>{first_name}</b> joined via your link. Once they verify their wallet (0.05 TON), you earn <b>+100 TT</b> + <b>5%</b> of all their mining claims!",
