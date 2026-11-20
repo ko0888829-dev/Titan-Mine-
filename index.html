@@ -468,7 +468,6 @@
   </nav>
 
   <!-- ==================== MODALS ==================== -->
-  <!-- Profile Modal -->
   <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
@@ -499,7 +498,6 @@
     </div>
   </div>
 
-  <!-- Levels 1-100 Modal -->
   <div id="levelsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center shrink-0">
@@ -513,7 +511,6 @@
     </div>
   </div>
 
-  <!-- Ambassador Modal -->
   <div id="ambassadorModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
@@ -527,7 +524,6 @@
     </div>
   </div>
 
-  <!-- Notifications Modal -->
   <div id="notifModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
@@ -549,14 +545,15 @@
     COIN_NAME: "Titan",
     COIN_SYMBOL: "TT",
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
-    // အရေးကြီး: အောက်ပါ ADMIN_WALLET နေရာတွင် သင့် TON Wallet Address အပြည့်အစုံ (48 လုံး) ထည့်ပါ!
-    ADMIN_WALLET: "UQCtF1234567890abcdefghijklmnopqrstuvwxyz1234uES8",
+    // အောက်ပါ ADMIN_WALLET နေရာတွင် သင့် TON Wallet Address အပြည့်အစုံ (စာလုံး ၄၈ လုံး) အစားထိုးထည့်ပါ
+    ADMIN_WALLET: "PUT_YOUR_FULL_48_CHAR_TON_WALLET_ADDRESS_HERE",
     DEDUST_NATIVE_VAULT: "EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_",
-    BOT_USERNAME: "TitanMining_bot", // <-- သင့် Bot Username ပြောင်းထည့်ပါ
+    BOT_USERNAME: "PUT_YOUR_BOT_USERNAME_HERE",
     VERIFY_TON_AMOUNT: 0.05,
     SERVICE_FEE_TON: 0.1,
     MIN_WITHDRAW: 10000,
-    FIREBASE_URL: "" // <-- Firebase Realtime Database URL ထည့်ပါ (ဥပမာ https://xxx.firebaseio.com)
+    FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
+    DB_NODE: "titan_tt_users"
   };
 
   // ==================== GENERATE LEVELS 1 TO 100 ====================
@@ -572,9 +569,9 @@
   const LEVELS = Array.from({ length: 100 }, (_, i) => {
     const lv = i + 1;
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 305, holdReq: 0, refReq: 0 };
-    const daily = Math.round(305 + (lv - 1) * 148.43); // Scales smoothly up to 15,000 TT/day at Lv.100
-    const holdReq = Math.round(Math.pow(lv - 1, 1.85) * 35); // Scales up to ~175,000 TT at Lv.100
-    const refReq = Math.round((lv - 1) * 3.5); // Scales up to 347 verified friends at Lv.100
+    const daily = Math.round(305 + (lv - 1) * 148.43);
+    const holdReq = Math.round(Math.pow(lv - 1, 1.85) * 35);
+    const refReq = Math.round((lv - 1) * 3.5);
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
 
@@ -584,14 +581,8 @@
     { id: "t3", type: "PROMOTED • INSTANT", title: "Join Payout Updates Channel", desc: "Visit link & earn instant TT", reward: 50, url: "https://t.me/DargonGolden" }
   ];
 
-  // ==================== LIVE DEDUST POOL STATE ====================
-  let poolData = {
-    tonReserve: 0,
-    ttReserve: 0,
-    poolAddress: "",
-    rateTTPerTon: 0,
-    loaded: false
-  };
+  // ==================== LIVE DEDUST POOL RATE ====================
+  let poolData = { tonReserve: 0, ttReserve: 0, rateTTPerTon: 0, loaded: false };
 
   async function fetchLiveDeDustRate() {
     const badge = document.getElementById("liveRateBadge");
@@ -609,28 +600,21 @@
         const tonRes = Number(isNativeFirst ? targetPool.reserves[0] : targetPool.reserves[1]) / 1e9;
         const ttRes = Number(isNativeFirst ? targetPool.reserves[1] : targetPool.reserves[0]) / 1e9;
         if (tonRes > 0 && ttRes > 0) {
-          poolData = {
-            tonReserve: tonRes,
-            ttReserve: ttRes,
-            poolAddress: targetPool.address,
-            rateTTPerTon: ttRes / tonRes,
-            loaded: true
-          };
+          poolData = { tonReserve: tonRes, ttReserve: ttRes, rateTTPerTon: ttRes / tonRes, loaded: true };
           badge.textContent = `1 TON ≈ ${poolData.rateTTPerTon.toFixed(2)} TT`;
           statusText.textContent = `Live Pool (${tonRes.toFixed(1)} TON Liq)`;
           recalcSwap();
           return;
         }
       }
-      badge.textContent = "Pool Low Liq";
-      statusText.textContent = "DeDust Pool Synced";
+      badge.textContent = "Pool Synced";
     } catch (e) {
       badge.textContent = "Retry Sync";
     }
   }
 
   // ==================== USER STATE & FIREBASE SYNC ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v2")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v3")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
@@ -662,8 +646,9 @@
 
   async function syncWithFirebase() {
     if (!CONFIG.FIREBASE_URL || !tgUser.id) return;
+    const base = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}`;
     try {
-      const res = await fetch(`${CONFIG.FIREBASE_URL}/users/${tgUser.id}.json`);
+      const res = await fetch(`${base}/${tgUser.id}.json`);
       const remote = await res.json();
       if (remote) {
         state = { ...state, ...remote };
@@ -671,10 +656,9 @@
         const referrerId = startParam.replace("ref_", "");
         if (referrerId && referrerId !== String(tgUser.id)) {
           state.referredBy = referrerId;
-          // Increment Referrer's Invited Count
-          const refRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${referrerId}/invited.json`);
+          const refRes = await fetch(`${base}/${referrerId}/invited.json`);
           const curInv = (await refRes.json()) || 0;
-          await fetch(`${CONFIG.FIREBASE_URL}/users/${referrerId}/invited.json`, {
+          await fetch(`${base}/${referrerId}/invited.json`, {
             method: "PUT",
             body: JSON.stringify(curInv + 1)
           });
@@ -686,9 +670,9 @@
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v2", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v3", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
-      fetch(`${CONFIG.FIREBASE_URL}/users/${tgUser.id}.json`, {
+      fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
         body: JSON.stringify(state)
       }).catch(() => {});
@@ -720,7 +704,6 @@
     setTimeout(() => t.classList.add("hidden"), 2800);
   }
 
-  // ==================== MINING & LEVEL AUTO-CALC ====================
   function recalculateLevel() {
     let highest = 1;
     for (const l of LEVELS) {
@@ -754,14 +737,10 @@
     }
   }, 1000);
 
-  // ==================== VERIFY & CLAIM + 5% REF COMMISSION ====================
   async function verifyWalletAction() {
     if (!state.walletAddress) return connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
-
-    if (CONFIG.ADMIN_WALLET.includes("...")) {
-      return showToast("⚠️ Admin Wallet Address မထည့်ရသေးပါ");
-    }
+    if (CONFIG.ADMIN_WALLET.startsWith("PUT_")) return showToast("⚠️ ADMIN_WALLET မထည့်ရသေးပါ");
 
     try {
       await tonConnectUI.sendTransaction({
@@ -774,12 +753,12 @@
       state.verified = true;
       state.activities.unshift({ title: "Wallet Verified (0.05 TON)", date: new Date().toLocaleDateString(), amount: "Verified" });
 
-      // Credit Referrer Qualified + 100 TT Instant Bonus
       if (state.referredBy && CONFIG.FIREBASE_URL) {
-        const rRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`);
+        const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
+        const rRes = await fetch(refUrl);
         const rData = await rRes.json();
         if (rData) {
-          await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`, {
+          await fetch(refUrl, {
             method: "PATCH",
             body: JSON.stringify({
               qualified: (rData.qualified || 0) + 1,
@@ -806,13 +785,13 @@
     state.cycleStart = Date.now();
     state.activities.unshift({ title: "Mining Cycle Claim", date: new Date().toLocaleDateString(), amount: `+${mined.toFixed(2)} TT` });
 
-    // 5% Commission to Referrer on every claim
     if (state.referredBy && CONFIG.FIREBASE_URL) {
       const comm = mined * 0.05;
-      const rRes = await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`);
+      const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
+      const rRes = await fetch(refUrl);
       const rData = await rRes.json();
       if (rData) {
-        await fetch(`${CONFIG.FIREBASE_URL}/users/${state.referredBy}.json`, {
+        await fetch(refUrl, {
           method: "PATCH",
           body: JSON.stringify({
             appBalance: (rData.appBalance || 0) + comm,
@@ -826,7 +805,6 @@
     showToast(`🎉 Claimed +${mined.toFixed(2)} TT!`);
   }
 
-  // ==================== DIRECT IN-APP DEDUST SWAP (BUY TT) ====================
   function togglePayAsset() {
     swapState.payAsset = swapState.payAsset === "TON" ? "TT" : "TON";
     recalcSwap();
@@ -855,15 +833,12 @@
     document.getElementById("receiveAssetBtnText").textContent = isTonToTT ? "TT" : "TON";
     document.getElementById("swapAvailBalance").textContent = isTonToTT ? state.tonBalance.toFixed(2) : state.onChainTT.toFixed(2);
 
-    // Constant Product Formula (x * y = k with 0.25% DeDust fee)
     let out = 0;
     if (poolData.loaded && amt > 0) {
       const amtAfterDexFee = amt * 0.9975;
-      if (isTonToTT) {
-        out = (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee);
-      } else {
-        out = (poolData.tonReserve * amtAfterDexFee) / (poolData.ttReserve + amtAfterDexFee);
-      }
+      out = isTonToTT
+        ? (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee)
+        : (poolData.tonReserve * amtAfterDexFee) / (poolData.ttReserve + amtAfterDexFee);
     }
     document.getElementById("swapOutputAmount").textContent = out.toFixed(3);
     document.getElementById("totalSwapCost").textContent = isTonToTT
@@ -873,7 +848,7 @@
 
   async function executeInstantSwitch() {
     if (!state.walletAddress) return connectOrReconnectWallet();
-    if (CONFIG.ADMIN_WALLET.includes("...")) return showToast("⚠️ Admin Wallet Address မထည့်ရသေးပါ");
+    if (CONFIG.ADMIN_WALLET.startsWith("PUT_")) return showToast("⚠️ ADMIN_WALLET မထည့်ရသေးပါ");
 
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     if (amt <= 0) return showToast("Enter valid amount");
@@ -883,23 +858,14 @@
         return showToast(`⚠️ Insufficient TON (Need ${(amt + 0.35).toFixed(2)} TON)`);
       }
       try {
-        // Multi-message TON Connect Transaction:
-        // Msg 1: App Service Fee (0.1 TON) to Admin Wallet
-        // Msg 2: Swap TON + 0.25 TON Gas to DeDust Native Vault
         const swapTonWithGasNano = BigInt(Math.round((amt + 0.25) * 1e9)).toString();
         const appFeeNano = BigInt(Math.round(CONFIG.SERVICE_FEE_TON * 1e9)).toString();
 
         await tonConnectUI.sendTransaction({
           validUntil: Math.floor(Date.now() / 1000) + 300,
           messages: [
-            {
-              address: CONFIG.ADMIN_WALLET,
-              amount: appFeeNano
-            },
-            {
-              address: CONFIG.DEDUST_NATIVE_VAULT,
-              amount: swapTonWithGasNano
-            }
+            { address: CONFIG.ADMIN_WALLET, amount: appFeeNano },
+            { address: CONFIG.DEDUST_NATIVE_VAULT, amount: swapTonWithGasNano }
           ]
         });
 
@@ -925,7 +891,6 @@
     showToast("📋 TT Contract Address Copied!");
   }
 
-  // ==================== TASKS, STREAK & WALLET ====================
   function completeTask(id, reward, url, title) {
     window.open(url, "_blank");
     if (!state.completedTasks.includes(id)) {
@@ -1010,7 +975,6 @@
   function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
   function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
 
-  // ==================== RENDER UI ====================
   function renderAll() {
     const { lvObj, hourly } = getCurrentMiningStats();
     const nextLv = LEVELS[Math.min(99, state.level)];
