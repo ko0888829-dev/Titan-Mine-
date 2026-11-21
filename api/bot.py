@@ -22,7 +22,6 @@ CACHED_BOT_USERNAME = ""
 
 
 def get_rank_prize(rank: int) -> float:
-    """Exact 1,000 TT Monthly Prize Distribution across Ranks 1 to 50"""
     if rank == 1:
         return 200.0
     if rank == 2:
@@ -30,11 +29,11 @@ def get_rank_prize(rank: int) -> float:
     if rank == 3:
         return 80.0
     if 4 <= rank <= 10:
-        return 30.0   # 7 * 30 = 210 TT
+        return 30.0
     if 11 <= rank <= 25:
-        return 14.0   # 15 * 14 = 210 TT
+        return 14.0
     if 26 <= rank <= 50:
-        return 7.2    # 25 * 7.2 = 180 TT (Total = 1,000 TT)
+        return 7.2
     return 0.0
 
 
@@ -46,7 +45,6 @@ async def tg_post(method: str, payload: dict):
 
 @app.get("/api/bot_info")
 async def get_bot_info():
-    """Fetch exact Telegram Bot Username automatically so Invite Links never fail"""
     global CACHED_BOT_USERNAME
     if CACHED_BOT_USERNAME:
         return {"ok": True, "username": CACHED_BOT_USERNAME}
@@ -320,7 +318,6 @@ async def telegram_webhook(req: Request):
                 })
                 return {"ok": True}
 
-            # ==================== MONTHLY LEADERBOARD PAYOUT (TOP 1-50 = 1,000 TT) ====================
             if text == "/payout_lb":
                 async with httpx.AsyncClient(timeout=20) as client:
                     res = await client.get(f"{base}.json")
@@ -366,7 +363,6 @@ async def telegram_webhook(req: Request):
                             except Exception:
                                 pass
 
-                    # Reset remaining users' monthlyQualified
                     for uid, u in users_data.items():
                         if isinstance(u, dict) and int(u.get("monthlyQualified", 0)) > 0:
                             await client.patch(f"{base}/{uid}.json", json={"monthlyQualified": 0})
