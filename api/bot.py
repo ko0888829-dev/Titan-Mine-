@@ -19,6 +19,7 @@ SETTINGS_NODE = "titan_tt_settings"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 CACHED_BOT_USERNAME = ""
+CACHED_BOT_ID = 0
 
 
 def get_rank_prize(rank: int) -> float:
@@ -45,19 +46,82 @@ async def tg_post(method: str, payload: dict):
 
 @app.get("/api/bot_info")
 async def get_bot_info():
-    global CACHED_BOT_USERNAME
+    global CACHED_BOT_USERNAME, CACHED_BOT_ID
     if CACHED_BOT_USERNAME:
-        return {"ok": True, "username": CACHED_BOT_USERNAME}
+        return {"ok": True, "username": CACHED_BOT_USERNAME, "id": CACHED_BOT_ID}
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             res = await client.get(f"{TG_API}/getMe")
             data = res.json()
             if data.get("ok"):
                 CACHED_BOT_USERNAME = data["result"]["username"]
-                return {"ok": True, "username": CACHED_BOT_USERNAME}
+                CACHED_BOT_ID = data["result"]["id"]
+                return {"ok": True, "username": CACHED_BOT_USERNAME, "id": CACHED_BOT_ID}
     except Exception as e:
         return {"ok": False, "error": str(e)}
     return {"ok": False}
+
+
+@app.post("/api/verify_task")
+async def verify_task(req: Request):
+    """Verify channel membership ONLY if the bot is an admin in that Telegram channel"""
+    global CACHED_BOT_ID
+    data = await req.json()
+    uid = data.get("uid")
+    url = str(data.get("url", "")).strip()
+
+    if not uid or not url:
+        return {"ok": False, "verified": False, "reason": "Missing parameters"}
+
+    # Check if URL is a public t.me/username link
+    clean = url.replace("https://", "").replace("http://", "").split("?")[0].rstrip("/")
+    if not clean.startswith("t.me/"):
+        # External website/link -> grant without verification
+        return {"ok": True, "verified": True, "mode": "external_no_check"}
+
+    slug = clean.replace("t.me/", "", 1).split("/")[0]
+    if not slug or slug.startswith("+") or slug in ("joinchat", "share"):
+        # Private invite link or non-username link -> grant without check
+        return {"ok": True, "verified": True, "mode": "non_public_no_check"}
+
+    chat_target = f"@{slug}"
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            if not CACHED_BOT_ID:
+                me_res = await client.get(f"{TG_API}/getMe")
+                me_json = me_res.json()
+                if me_json.get("ok"):
+                    CACHED_BOT_ID = me_json["result"]["id"]
+
+            # 1. Check if our Bot is an Admin in this channel
+            bot_mem_res = await client.get(f"{TG_API}/getChatMember", params={"chat_id": chat_target, "user_id": CACHED_BOT_ID})
+            bot_mem = bot_mem_res.json()
+
+            if not bot_mem.get("ok"):
+                # Bot is NOT in channel / not admin -> grant reward without checking
+                return {"ok": True, "verified": True, "mode": "bot_not_admin_no_check"}
+
+            bot_status = bot_mem.get("result", {}).get("status", "")
+            if bot_status not in ("administrator", "creator"):
+                # Bot is not admin -> grant reward without checking
+                return {"ok": True, "verified": True, "mode": "bot_not_admin_no_check"}
+
+            # 2. Bot IS Admin -> Strictly verify if User has joined the channel
+            user_mem_res = await client.get(f"{TG_API}/getChatMember", params={"chat_id": chat_target, "user_id": int(uid)})
+            user_mem = user_mem_res.json()
+            if user_mem.get("ok"):
+                u_status = user_mem.get("result", {}).get("status", "")
+                if u_status in ("member", "administrator", "creator"):
+                    return {"ok": True, "verified": True, "mode": "admin_verified"}
+
+            return {
+                "ok": True,
+                "verified": False,
+                "reason": f"Please join {chat_target} first before claiming!"
+            }
+    except Exception:
+        # On API lookup failure for unknown external target, allow fallback
+        return {"ok": True, "verified": True, "mode": "fallback"}
 
 
 @app.post("/api/buy_notify")
@@ -68,6 +132,7 @@ async def buy_notify(req: Request):
     username = data.get("username", "")
     tt_amount = float(data.get("ttAmount", 0))
     ton_paid = float(data.get("tonPaid", 0))
+    discount_pct = int(data.get("discountPct", 0))
     wallet = data.get("wallet", "")
 
     if not uid or tt_amount <= 0 or not wallet:
@@ -81,6 +146,7 @@ async def buy_notify(req: Request):
         "username": username,
         "ttAmount": tt_amount,
         "tonPaid": ton_paid,
+        "discountPct": discount_pct,
         "wallet": wallet,
         "status": "paid_ton",
         "createdAt": int(time.time())
@@ -97,6 +163,7 @@ async def buy_notify(req: Request):
             "━━━━━━━━━━━━━━━━━━━━━━━━\n"
             f"👤 <b>Buyer:</b> {name} ({user_tag})\n"
             f"🆔 <b>UID:</b> <code>{uid}</code>\n"
+            f"🏷️ <b>Discount Applied:</b> <b>-{discount_pct}% OFF</b>\n"
             f"💎 <b>TON Paid:</b> <b>{ton_paid:.4f} TON</b> (incl. 0.1 fee)\n"
             f"🪙 <b>Send TT Amount:</b> <b>{tt_amount:,.2f} TT</b>\n"
             f"👛 <b>Buyer TON Wallet:</b>\n<code>{wallet}</code>\n"
@@ -296,7 +363,7 @@ async def telegram_webhook(req: Request):
                         f"💸 <b>Pending Withdrawals:</b> {pending_wds:,}\n"
                         f"🚨 <b>Multi-Account Flagged:</b> {multi_flagged:,}\n"
                         f"💰 <b>Total App TT:</b> {total_app_tt:,.2f} TT\n"
-                        f"🏷️ <b>Direct Buy Price:</b> 1 TT = <b>{cur_price} TON</b>\n"
+                        f"🏷️ <b>Base Direct Buy Price:</b> 1 TT = <b>{cur_price} TON</b>\n"
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
                         "🏆 <b>Monthly Leaderboard (1,000 TT Pool):</b>\n"
                         "• <code>/payout_lb</code> - Top 1-50 ဆုကြေးခွဲဝေပြီး လသစ် Reset ချရန်\n\n"
