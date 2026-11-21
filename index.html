@@ -129,7 +129,7 @@
         </div>
         <div class="text-right">
           <div class="text-[11px] text-zinc-400">Min withdraw: <span class="text-amber-300 font-bold">100 TT</span></div>
-          <div class="text-[10px] text-amber-400/80">Req: 25% Wallet Hold</div>
+          <div class="text-[10px] text-amber-400/80">Req: 8 TT Hold</div>
           <div class="w-28 h-1.5 bg-zinc-800 rounded-full mt-1.5 overflow-hidden ml-auto">
             <div id="withdrawProgressBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full" style="width: 2%"></div>
           </div>
@@ -282,8 +282,8 @@
             <button onclick="selectBuyPreset(1)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">1 TT</button>
             <button onclick="selectBuyPreset(2)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">2 TT</button>
             <button onclick="selectBuyPreset(3)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">3 TT</button>
-            <button onclick="selectBuyPreset(8)" class="py-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-extrabold">8 TT (Lv.2)</button>
-            <button onclick="selectBuyPreset(25)" class="py-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-extrabold">25 TT (25%)</button>
+            <button onclick="selectBuyPreset(8)" class="py-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-extrabold">8 TT (Hold)</button>
+            <button onclick="selectBuyPreset(25)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">25 TT</button>
             <button onclick="selectBuyPreset(50)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">50 TT</button>
             <button onclick="selectBuyPreset(100)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">100 TT</button>
             <button onclick="selectBuyPreset(200)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">200 TT</button>
@@ -296,7 +296,7 @@
             <span>On-chain Hold: <b class="text-white" id="marketCurrentHold">0.00</b> TT</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <input id="buyTTInput" type="number" value="1" min="1" step="1" oninput="recalcDirectBuy()" class="bg-transparent text-2xl font-extrabold text-amber-400 w-full focus:outline-none" />
+            <input id="buyTTInput" type="number" value="8" min="1" step="1" oninput="recalcDirectBuy()" class="bg-transparent text-2xl font-extrabold text-amber-400 w-full focus:outline-none" />
             <div class="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold shrink-0">
               🪙 TT
             </div>
@@ -309,7 +309,7 @@
             <span>Wallet Balance: <b class="text-white" id="swapAvailBalance">0.00</b> TON</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <div id="buyTonTotalDisplay" class="text-2xl font-extrabold text-white">1.271</div>
+            <div id="buyTonTotalDisplay" class="text-2xl font-extrabold text-white">9.468</div>
             <div class="px-3.5 py-1.5 rounded-full bg-white/10 text-white text-xs font-extrabold shrink-0">
               💎 TON
             </div>
@@ -318,8 +318,8 @@
 
         <div class="bg-white/5 rounded-2xl p-3.5 space-y-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-zinc-400">Token Cost (<span id="costBreakdownQty">1</span> TT × <span id="costBreakdownRate">1.171</span>)</span>
-            <span class="font-bold text-white" id="tokenOnlyTon">1.171 TON</span>
+            <span class="text-zinc-400">Token Cost (<span id="costBreakdownQty">8</span> TT × <span id="costBreakdownRate">1.171</span>)</span>
+            <span class="font-bold text-white" id="tokenOnlyTon">9.368 TON</span>
           </div>
           <div class="flex justify-between">
             <span class="text-zinc-400">Processing & Memo Fee</span>
@@ -327,7 +327,7 @@
           </div>
           <div class="flex justify-between pt-2 border-t border-white/10">
             <span class="font-bold text-zinc-300">Total Payable</span>
-            <span id="totalSwapCost" class="font-extrabold text-amber-400">1.271 TON</span>
+            <span id="totalSwapCost" class="font-extrabold text-amber-400">9.468 TON</span>
           </div>
         </div>
 
@@ -354,7 +354,7 @@
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
             <b>from qualified friends' mining claims</b><br>
-            Friend must verify (0.1 TON) & hold <b>8+ TT (Lv.2)</b>
+            Friend must verify (0.1 TON) & hold <b>8+ TT</b>
           </div>
         </div>
       </div>
@@ -385,16 +385,16 @@
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          To count as a <b>Qualified Friend</b>, your friend must complete the <b>0.1 TON</b> verification <b>AND</b> hold at least <b>8 TT (Lv.2)</b> on-chain.
+          To count as a <b>Qualified Friend</b>, your friend must complete the <b>0.1 TON</b> verification <b>AND</b> hold at least <b>8 TT</b> on-chain.
         </p>
       </div>
 
-      <!-- MY INVITED FRIENDS LIST (SHOWS WHO USER INVITED + QUALIFIED STATUS) -->
+      <!-- MY INVITED FRIENDS LIST -->
       <div id="invitedCrewSection" class="gold-card rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
             <h3 class="font-extrabold text-base text-white">👥 My Invited Friends</h3>
-            <p class="text-[11px] text-zinc-400">Track verification & 8+ TT Lv.2 hold status</p>
+            <p class="text-[11px] text-zinc-400">Track verification & 8+ TT wallet hold status</p>
           </div>
           <button onclick="loadMyInvitedFriends()" class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-bold text-amber-300">↻ Refresh</button>
         </div>
@@ -403,7 +403,7 @@
         </div>
       </div>
 
-      <!-- MONTHLY TOP 50 LEADERBOARD (TOTAL 1,000 TITAN TT) -->
+      <!-- MONTHLY TOP 50 LEADERBOARD -->
       <div class="gold-card rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -467,17 +467,18 @@
         </div>
       </div>
 
+      <!-- 8 TT WALLET HOLD WITHDRAWAL REQUIREMENT BOX -->
       <div class="gold-card rounded-3xl p-4 space-y-2.5 border border-amber-400/30">
         <div class="flex justify-between items-center text-xs">
-          <span class="font-bold text-amber-300">🔒 Withdrawal Hold Rule (25%)</span>
-          <span id="holdStatusBadge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold">Checking...</span>
+          <span class="font-bold text-amber-300">🔒 Withdrawal Hold Requirement (8 TT)</span>
+          <span id="wdHoldStatusBadge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold">Checking...</span>
         </div>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          You can withdraw any custom amount (Min <b>100 TT</b>). Your TON wallet must hold at least <b class="text-white">25%</b> of the requested withdrawal amount on-chain.
+          Hold at least <b class="text-white">8 TT</b> in your connected TON wallet on-chain to unlock custom withdrawals (Min <b>100 TT</b>).
         </p>
         <div class="bg-black/40 rounded-xl p-2.5 flex justify-between items-center text-xs">
-          <span class="text-zinc-400">Min Hold (for 100 TT):</span>
-          <span class="font-extrabold text-white"><span id="requiredHoldTT">25.00</span> TT</span>
+          <span class="text-zinc-400">Your On-Chain Hold:</span>
+          <span class="font-extrabold text-white"><span id="walletCurrentHoldLabel">0.00</span> / 8.00 TT</span>
         </div>
       </div>
 
@@ -489,7 +490,7 @@
           </div>
           <div class="text-right text-xs">
             <span class="text-zinc-400">Min Withdraw</span><br>
-            <b class="text-amber-400">100 TT</b>
+            <b class="text-amber-400">100 TT (8 TT Hold)</b>
           </div>
         </div>
 
@@ -542,7 +543,7 @@
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- WITHDRAW HISTORY MODAL (PROCESSING / COMPLETE / REJECTED) -->
+  <!-- WITHDRAW HISTORY MODAL -->
   <div id="withdrawHistoryModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center shrink-0">
@@ -576,17 +577,17 @@
         <div class="bg-white/5 p-3 rounded-xl flex justify-between"><span>🎖️ Rank #11 – #25 (15 winners)</span><span class="font-bold text-white">14.00 TT each (210 TT)</span></div>
         <div class="bg-white/5 p-3 rounded-xl flex justify-between"><span>⭐ Rank #26 – #50 (25 winners)</span><span class="font-bold text-white">7.20 TT each (180 TT)</span></div>
       </div>
-      <p class="text-[11px] text-zinc-400">* Only friends who complete 0.1 TON verification AND hold ≥ 8 TT (Lv.2) are counted.</p>
+      <p class="text-[11px] text-zinc-400">* Only friends who complete 0.1 TON verification AND hold ≥ 8 TT are counted.</p>
     </div>
   </div>
 
-  <!-- Custom Withdraw Modal -->
+  <!-- Custom Withdraw Modal (8 TT ON-CHAIN HOLD CHECK) -->
   <div id="withdrawModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
         <div>
           <h3 class="text-lg font-extrabold text-white">Withdraw TITAN (TT)</h3>
-          <p class="text-xs text-zinc-400">Enter custom amount (Min 100 TT)</p>
+          <p class="text-xs text-zinc-400">Enter custom amount (Min 100 TT • Requires 8 TT Hold)</p>
         </div>
         <button onclick="closeModal('withdrawModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
@@ -597,19 +598,19 @@
           <span>Available: <b class="text-white" id="wdModalAvail">0.00</b> TT</span>
         </div>
         <div class="flex items-center gap-2">
-          <input id="wdCustomAmount" type="number" min="100" step="1" placeholder="100" oninput="updateWithdrawPreview()" class="bg-transparent text-2xl font-extrabold text-amber-400 w-full focus:outline-none" />
+          <input id="wdCustomAmount" type="number" min="100" step="1" placeholder="100" class="bg-transparent text-2xl font-extrabold text-amber-400 w-full focus:outline-none" />
           <button onclick="setMaxWithdrawInput()" class="px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold text-white">MAX</button>
         </div>
       </div>
 
       <div class="bg-white/5 rounded-2xl p-3.5 space-y-2 text-xs">
         <div class="flex justify-between">
-          <span class="text-zinc-400">Required 25% On-Chain Hold:</span>
-          <span class="font-extrabold text-white" id="wdModalReqHold">25.00 TT</span>
+          <span class="text-zinc-400">Required Wallet Hold:</span>
+          <span class="font-extrabold text-white">8.00 TT</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-zinc-400">Your Current On-Chain Hold:</span>
-          <span class="font-extrabold text-emerald-400" id="wdModalCurHold">0.00 TT</span>
+          <span class="text-zinc-400">Your On-Chain TT Hold:</span>
+          <span class="font-extrabold text-emerald-400" id="wdModalCurHold">0.00 TT ✓</span>
         </div>
         <div class="flex justify-between pt-2 border-t border-white/10">
           <span class="text-zinc-400">Destination Wallet:</span>
@@ -695,7 +696,7 @@
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
         <div class="font-bold text-amber-400">🏆 Monthly Top 50 Leaderboard (1,000 TT Pool)!</div>
-        <p class="text-zinc-300">Invite friends who verify (0.1 TON) and hold ≥ 8 TT (Lv.2) to rank in Top 50 and win monthly TT rewards.</p>
+        <p class="text-zinc-300">Hold at least 8 TT in your connected TON wallet to unlock withdrawals (Min 100 TT) anytime.</p>
       </div>
     </div>
   </div>
@@ -716,7 +717,7 @@
     SERVICE_FEE_TON: 0.1,
     DEFAULT_TON_PER_TT: 1.171,
     MIN_WITHDRAW: 100,
-    HOLD_PERCENT_REQUIRED: 0.25,
+    MIN_WITHDRAW_HOLD_TT: 8, // Must hold >= 8 TT on-chain in TON wallet to withdraw
     FRIEND_MIN_HOLD_LV2: 8,
     REF_COMMISSION_RATE: 0.05,
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
@@ -752,8 +753,8 @@
     const lv = i + 1;
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 10, holdReq: 0, refReq: 0 };
     const daily = Number((10 + Math.pow((lv - 1) / 99, 1.35) * 490).toFixed(1));
-    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8);
-    const refReq = Math.max(1, Math.round((lv - 1) * 2.5));
+    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8); // Lv.2 = 8 TT
+    const refReq = Math.max(1, Math.round((lv - 1) * 2.5)); // Lv.2 = 3 Friends
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
 
@@ -933,7 +934,6 @@
           };
         });
 
-      // Keep Invited & Qualified counts accurately synced
       state.invited = Math.max(state.invited, friends.length);
       const realQualCount = friends.filter(f => f.isQualified).length;
       if (realQualCount > state.qualified) {
@@ -963,7 +963,7 @@
     } catch (e) {}
   };
 
-  // ==================== WITHDRAW HISTORY MODAL (PROCESSING / COMPLETE / REJECTED) ====================
+  // ==================== WITHDRAW HISTORY MODAL ====================
   window.openWithdrawHistoryModal = async function() {
     window.openModal("withdrawHistoryModal");
     const container = document.getElementById("withdrawHistoryList");
@@ -1076,7 +1076,7 @@
   }
 
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v13")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v15")) || {
     firstName: "",
     username: "",
     appBalance: 0,
@@ -1144,7 +1144,7 @@
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v13", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v15", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -1427,51 +1427,41 @@
     } catch (e) {}
   }
 
-  // ==================== CUSTOM AMOUNT WITHDRAWAL ====================
+  // ==================== CUSTOM AMOUNT WITHDRAWAL (8 TT ON-CHAIN HOLD REQUIRED) ====================
   window.openWithdrawModal = function() {
     if (!state.verified) return showToast("🛡️ Verify wallet (0.1 TON) first!");
     if (!state.walletAddress) return showToast("👛 Connect your TON wallet first!");
     if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Withdrawals locked");
+    if (state.onChainTT < CONFIG.MIN_WITHDRAW_HOLD_TT) {
+      showToast(`🔒 Hold at least ${CONFIG.MIN_WITHDRAW_HOLD_TT} TT in your wallet to withdraw!`);
+      setTimeout(() => {
+        window.selectBuyPreset(8);
+        window.switchTab("market");
+      }, 1400);
+      return;
+    }
     if (state.appBalance < CONFIG.MIN_WITHDRAW) {
       return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW} TT`);
     }
 
     document.getElementById("wdModalAvail").textContent = state.appBalance.toFixed(2);
     document.getElementById("wdCustomAmount").value = Math.min(state.appBalance, CONFIG.MIN_WITHDRAW).toFixed(0);
-    document.getElementById("wdModalCurHold").textContent = state.onChainTT.toFixed(2) + " TT";
+    document.getElementById("wdModalCurHold").textContent = state.onChainTT.toFixed(2) + " TT ✓";
     document.getElementById("wdModalWallet").textContent = state.walletAddress.slice(0, 6) + "..." + state.walletAddress.slice(-6);
-    window.updateWithdrawPreview();
     window.openModal("withdrawModal");
   };
 
   window.setMaxWithdrawInput = function() {
-    const maxByHold = state.onChainTT / CONFIG.HOLD_PERCENT_REQUIRED;
-    const maxAllowed = Math.min(state.appBalance, maxByHold);
-    document.getElementById("wdCustomAmount").value = Math.floor(maxAllowed);
-    window.updateWithdrawPreview();
-  };
-
-  window.updateWithdrawPreview = function() {
-    const val = parseFloat(document.getElementById("wdCustomAmount").value) || 0;
-    const req = val * CONFIG.HOLD_PERCENT_REQUIRED;
-    const el = document.getElementById("wdModalReqHold");
-    el.textContent = req.toFixed(2) + " TT";
-    el.className = state.onChainTT >= req ? "font-extrabold text-emerald-400" : "font-extrabold text-rose-400";
+    document.getElementById("wdCustomAmount").value = Math.floor(state.appBalance);
   };
 
   window.submitCustomWithdraw = async function() {
     const amt = parseFloat(document.getElementById("wdCustomAmount").value) || 0;
+    if (state.onChainTT < CONFIG.MIN_WITHDRAW_HOLD_TT) {
+      return showToast(`🔒 Hold at least ${CONFIG.MIN_WITHDRAW_HOLD_TT} TT on-chain to withdraw!`);
+    }
     if (amt < CONFIG.MIN_WITHDRAW) return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW} TT`);
     if (amt > state.appBalance) return showToast("⚠️ Exceeds your App Balance");
-
-    const requiredHold = amt * CONFIG.HOLD_PERCENT_REQUIRED;
-    if (state.onChainTT < requiredHold) {
-      const missingTT = (requiredHold - state.onChainTT).toFixed(2);
-      showToast(`🔒 Need ${requiredHold.toFixed(2)} TT (25%) Hold! Buy ${missingTT} TT more.`);
-      window.closeModal("withdrawModal");
-      setTimeout(() => window.switchTab("market"), 1400);
-      return;
-    }
 
     try {
       const res = await fetch("/api/withdraw_notify", {
@@ -1483,7 +1473,8 @@
           username: tgUser.username || "",
           amount: amt,
           wallet: state.walletAddress,
-          onChainTT: state.onChainTT
+          onChainTT: state.onChainTT,
+          level: state.level
         })
       });
       const out = await res.json();
@@ -1586,15 +1577,15 @@
     document.getElementById("gridLeague").textContent = getLeagueName(state.level);
     document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • Tap for 1-100`;
 
-    const reqHold = CONFIG.MIN_WITHDRAW * CONFIG.HOLD_PERCENT_REQUIRED;
-    document.getElementById("requiredHoldTT").textContent = reqHold.toFixed(2);
-    const holdBadge = document.getElementById("holdStatusBadge");
-    if (state.onChainTT >= reqHold) {
-      holdBadge.textContent = "Eligible ✓";
-      holdBadge.className = "px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold";
+    // 8 TT Wallet Hold Eligibility Badge in Wallet Tab
+    document.getElementById("walletCurrentHoldLabel").textContent = state.onChainTT.toFixed(2);
+    const wdBadge = document.getElementById("wdHoldStatusBadge");
+    if (state.onChainTT >= CONFIG.MIN_WITHDRAW_HOLD_TT) {
+      wdBadge.textContent = "Eligible (8+ TT) ✓";
+      wdBadge.className = "px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold";
     } else {
-      holdBadge.textContent = `Need ${(reqHold - state.onChainTT).toFixed(2)} TT`;
-      holdBadge.className = "px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-extrabold";
+      wdBadge.textContent = `Need ${(CONFIG.MIN_WITHDRAW_HOLD_TT - state.onChainTT).toFixed(2)} TT`;
+      wdBadge.className = "px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-extrabold";
     }
 
     const claimBtn = document.getElementById("mainClaimBtn");
