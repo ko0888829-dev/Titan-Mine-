@@ -258,17 +258,17 @@
     <section id="tab-station" class="hidden space-y-3">
       <div class="mb-2">
         <h2 class="text-xl font-extrabold text-white">Task Station</h2>
-        <p class="text-xs text-zinc-400">Complete verified partner missions to earn instant TT</p>
+        <p class="text-xs text-zinc-400">Join partner channels & verify to earn instant TT</p>
       </div>
       <div id="tasksContainer" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== TAB 3: MARKET (DIRECT TT STORE) ==================== -->
+    <!-- ==================== TAB 3: MARKET (DIRECT TT STORE WITH DISCOUNTS & HOT TAG) ==================== -->
     <section id="tab-market" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl font-extrabold text-white">Direct TT Store</h2>
-          <p class="text-xs text-zinc-400">Buy exact TT amount directly via TON (Zero Slippage)</p>
+          <p class="text-xs text-zinc-400">Flash Sale Discounts up to 35% OFF • Zero Slippage</p>
         </div>
         <span class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30" id="livePriceTag">
           1 TT = 1.171 TON
@@ -277,16 +277,48 @@
 
       <div class="gold-card rounded-3xl p-4 space-y-3.5">
         <div>
-          <div class="text-[11px] text-zinc-400 mb-2 font-semibold">Select TT Amount:</div>
-          <div class="grid grid-cols-4 gap-1.5">
-            <button onclick="selectBuyPreset(1)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">1 TT</button>
-            <button onclick="selectBuyPreset(2)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">2 TT</button>
-            <button onclick="selectBuyPreset(3)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">3 TT</button>
-            <button onclick="selectBuyPreset(8)" class="py-2 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-extrabold">8 TT (Hold)</button>
-            <button onclick="selectBuyPreset(25)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">25 TT</button>
-            <button onclick="selectBuyPreset(50)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">50 TT</button>
-            <button onclick="selectBuyPreset(100)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">100 TT</button>
-            <button onclick="selectBuyPreset(200)" class="py-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">200 TT</button>
+          <div class="text-[11px] text-zinc-400 mb-2.5 font-semibold">Select TT Package (Discount Applied):</div>
+          <div class="grid grid-cols-4 gap-2">
+            <!-- 1 TT: 30% OFF -->
+            <button onclick="selectBuyPreset(1)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-emerald-500 text-black text-[9px] font-black leading-none">-30%</span>
+              1 TT
+            </button>
+            <!-- 2 TT: 20% OFF -->
+            <button onclick="selectBuyPreset(2)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-amber-400 text-black text-[9px] font-black leading-none">-20%</span>
+              2 TT
+            </button>
+            <!-- 3 TT: 20% OFF -->
+            <button onclick="selectBuyPreset(3)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-amber-400 text-black text-[9px] font-black leading-none">-20%</span>
+              3 TT
+            </button>
+            <!-- 8 TT: HOT 35% OFF -->
+            <button onclick="selectBuyPreset(8)" class="relative pt-3 pb-2 rounded-xl bg-amber-500/15 border border-amber-400/50 text-amber-300 text-xs font-extrabold">
+              <span class="absolute -top-2.5 inset-x-1 px-1 py-0.5 rounded bg-gradient-to-r from-rose-500 to-amber-400 text-black text-[8px] font-black leading-none text-center">🔥 HOT -35%</span>
+              8 TT
+            </button>
+            <!-- 25 TT: 5% OFF -->
+            <button onclick="selectBuyPreset(25)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-zinc-700 text-amber-300 text-[9px] font-bold leading-none">-5%</span>
+              25 TT
+            </button>
+            <!-- 50 TT: 5% OFF -->
+            <button onclick="selectBuyPreset(50)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-zinc-700 text-amber-300 text-[9px] font-bold leading-none">-5%</span>
+              50 TT
+            </button>
+            <!-- 100 TT: 5% OFF -->
+            <button onclick="selectBuyPreset(100)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-zinc-700 text-amber-300 text-[9px] font-bold leading-none">-5%</span>
+              100 TT
+            </button>
+            <!-- 200 TT: 5% OFF -->
+            <button onclick="selectBuyPreset(200)" class="relative pt-3 pb-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-black border border-white/10 text-xs font-extrabold transition">
+              <span class="absolute -top-2 right-1 px-1.5 py-0.5 rounded bg-zinc-700 text-amber-300 text-[9px] font-bold leading-none">-5%</span>
+              200 TT
+            </button>
           </div>
         </div>
 
@@ -305,11 +337,11 @@
 
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>You pay (TON)</span>
+            <span>You pay (After Discount)</span>
             <span>Wallet Balance: <b class="text-white" id="swapAvailBalance">0.00</b> TON</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <div id="buyTonTotalDisplay" class="text-2xl font-extrabold text-white">9.468</div>
+            <div id="buyTonTotalDisplay" class="text-2xl font-extrabold text-white">6.189</div>
             <div class="px-3.5 py-1.5 rounded-full bg-white/10 text-white text-xs font-extrabold shrink-0">
               💎 TON
             </div>
@@ -318,8 +350,12 @@
 
         <div class="bg-white/5 rounded-2xl p-3.5 space-y-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-zinc-400">Token Cost (<span id="costBreakdownQty">8</span> TT × <span id="costBreakdownRate">1.171</span>)</span>
-            <span class="font-bold text-white" id="tokenOnlyTon">9.368 TON</span>
+            <span class="text-zinc-400">Original Cost (<span id="costBreakdownQty">8</span> TT × <span id="costBreakdownRate">1.171</span>)</span>
+            <span class="line-through text-zinc-500" id="originalTonDisplay">9.368 TON</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-emerald-400 font-semibold">Package Discount (<span id="discountPctLabel">-35%</span>)</span>
+            <span class="font-bold text-emerald-400" id="discountedTokenOnlyTon">6.089 TON</span>
           </div>
           <div class="flex justify-between">
             <span class="text-zinc-400">Processing & Memo Fee</span>
@@ -327,7 +363,7 @@
           </div>
           <div class="flex justify-between pt-2 border-t border-white/10">
             <span class="font-bold text-zinc-300">Total Payable</span>
-            <span id="totalSwapCost" class="font-extrabold text-amber-400">9.468 TON</span>
+            <span id="totalSwapCost" class="font-extrabold text-amber-400">6.189 TON</span>
           </div>
         </div>
 
@@ -498,7 +534,6 @@
           👛 Connect / Reconnect TON Wallet
         </button>
 
-        <!-- 3 BUTTONS: + Buy TT | Withdraw | Withdraw History -->
         <div class="grid grid-cols-3 gap-2">
           <button onclick="switchTab('market')" class="py-2.5 rounded-xl gold-btn text-xs">+ Buy TT</button>
           <button onclick="openWithdrawModal()" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">↗ Withdraw</button>
@@ -581,7 +616,7 @@
     </div>
   </div>
 
-  <!-- Custom Withdraw Modal (8 TT ON-CHAIN HOLD CHECK) -->
+  <!-- Custom Withdraw Modal -->
   <div id="withdrawModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
@@ -695,7 +730,7 @@
         <button onclick="closeModal('notifModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
-        <div class="font-bold text-amber-400">🏆 Monthly Top 50 Leaderboard (1,000 TT Pool)!</div>
+        <div class="font-bold text-amber-400">🔥 Flash Sale: Up to 35% OFF on 8 TT Package!</div>
         <p class="text-zinc-300">Hold at least 8 TT in your connected TON wallet to unlock withdrawals (Min 100 TT) anytime.</p>
       </div>
     </div>
@@ -717,7 +752,7 @@
     SERVICE_FEE_TON: 0.1,
     DEFAULT_TON_PER_TT: 1.171,
     MIN_WITHDRAW: 100,
-    MIN_WITHDRAW_HOLD_TT: 8, // Must hold >= 8 TT on-chain in TON wallet to withdraw
+    MIN_WITHDRAW_HOLD_TT: 8,
     FRIEND_MIN_HOLD_LV2: 8,
     REF_COMMISSION_RATE: 0.05,
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
@@ -729,6 +764,16 @@
   };
 
   let currentTonPerTT = CONFIG.DEFAULT_TON_PER_TT;
+
+  // Discount Matrix: 1 TT = 30%, 2 TT = 20%, 3 TT = 20%, 8 TT = 35% (HOT), others = 5%
+  function getDiscountPercent(qty) {
+    const q = Number(qty);
+    if (q === 1) return 30;
+    if (q === 2 || q === 3) return 20;
+    if (q === 8) return 35;
+    if (q > 0) return 5;
+    return 0;
+  }
 
   function getRankPrize(rank) {
     if (rank === 1) return 200.0;
@@ -753,14 +798,14 @@
     const lv = i + 1;
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 10, holdReq: 0, refReq: 0 };
     const daily = Number((10 + Math.pow((lv - 1) / 99, 1.35) * 490).toFixed(1));
-    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8); // Lv.2 = 8 TT
-    const refReq = Math.max(1, Math.round((lv - 1) * 2.5)); // Lv.2 = 3 Friends
+    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8);
+    const refReq = Math.max(1, Math.round((lv - 1) * 2.5));
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
 
   let dynamicTasks = [
-    { id: "t1", type: "ONE TIME • SOCIAL", title: "Join Official Titan Channel", desc: "Join channel & claim instant bonus", reward: 2, url: "https://t.me/cryptominingmm0" },
-    { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check TT/TON pool on DeDust", reward: 1, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
+    { id: "t1", type: "CHANNEL MISSION", title: "Join Official Titan Channel", desc: "Join channel & tap Verify to claim", reward: 2, url: "https://t.me/cryptominingmm0" },
+    { id: "t2", type: "PARTNER MISSION", title: "Trade TT on DeDust.io", desc: "Visit TT/TON pool on DeDust", reward: 1, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
   ];
 
   // ==================== RESOLVE EXACT BOT USERNAME AUTOMATICALLY ====================
@@ -904,6 +949,58 @@
       }
     } catch (e) {}
   }
+
+  // ==================== SMART TASK EXECUTION (GO -> VERIFY CHANNEL IF BOT IS ADMIN) ====================
+  let openedTasks = new Set();
+
+  window.handleTaskAction = async function(id, reward, url, title) {
+    if (state.completedTasks.includes(id)) return;
+
+    // Step 1: Open Channel/Link first if not opened yet
+    if (!openedTasks.has(id)) {
+      openedTasks.add(id);
+      if (url.includes("t.me/") && tg && tg.openTelegramLink) {
+        tg.openTelegramLink(url);
+      } else {
+        window.open(url, "_blank");
+      }
+      renderAll();
+      showToast("🔗 Opened! Now tap 'Verify' to claim reward.");
+      return;
+    }
+
+    // Step 2: Call backend /api/verify_task (checks join ONLY if Bot is Admin in that channel)
+    showToast("⏳ Checking task completion...");
+    try {
+      const res = await fetch("/api/verify_task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: tgUser.id, url })
+      });
+      const check = await res.json();
+
+      if (!check.verified) {
+        showToast(`⚠️ ${check.reason || "Please join the channel first!"}`);
+        if (url.includes("t.me/") && tg && tg.openTelegramLink) {
+          tg.openTelegramLink(url);
+        }
+        return;
+      }
+
+      state.completedTasks.push(id);
+      state.appBalance += Number(reward);
+      state.activities.unshift({
+        title: `Mission: ${title}`,
+        date: new Date().toLocaleDateString(),
+        amount: `+${reward} TT`
+      });
+      saveState();
+      renderAll();
+      showToast(`✅ Verified! +${reward} TT Earned!`);
+    } catch (e) {
+      showToast("⚠️ Verification error, please retry");
+    }
+  };
 
   // ==================== LOAD USER'S INVITED FRIENDS LIST ====================
   window.loadMyInvitedFriends = async function() {
@@ -1076,7 +1173,7 @@
   }
 
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v15")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v16")) || {
     firstName: "",
     username: "",
     appBalance: 0,
@@ -1144,7 +1241,7 @@
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v15", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v16", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -1301,7 +1398,7 @@
     showToast(`🎉 Claimed +${mined.toFixed(3)} TT!`);
   };
 
-  // ==================== DIRECT IN-APP TT STORE ====================
+  // ==================== DIRECT IN-APP TT STORE WITH DISCOUNTS ====================
   window.selectBuyPreset = function(qty) {
     document.getElementById("buyTTInput").value = qty;
     window.recalcDirectBuy();
@@ -1309,12 +1406,16 @@
 
   window.recalcDirectBuy = function() {
     const qty = parseFloat(document.getElementById("buyTTInput").value) || 0;
-    const tokenTon = qty * currentTonPerTT;
-    const totalTon = qty > 0 ? (tokenTon + CONFIG.SERVICE_FEE_TON) : 0;
+    const discPct = getDiscountPercent(qty);
+    const originalTokenTon = qty * currentTonPerTT;
+    const discountedTokenTon = originalTokenTon * (1 - discPct / 100);
+    const totalTon = qty > 0 ? (discountedTokenTon + CONFIG.SERVICE_FEE_TON) : 0;
 
     document.getElementById("costBreakdownQty").textContent = qty;
     document.getElementById("costBreakdownRate").textContent = currentTonPerTT;
-    document.getElementById("tokenOnlyTon").textContent = tokenTon.toFixed(3) + " TON";
+    document.getElementById("originalTonDisplay").textContent = originalTokenTon.toFixed(3) + " TON";
+    document.getElementById("discountPctLabel").textContent = `-${discPct}%`;
+    document.getElementById("discountedTokenOnlyTon").textContent = discountedTokenTon.toFixed(3) + " TON";
     document.getElementById("buyTonTotalDisplay").textContent = totalTon.toFixed(3);
     document.getElementById("totalSwapCost").textContent = totalTon.toFixed(3) + " TON";
     document.getElementById("swapAvailBalance").textContent = state.tonBalance.toFixed(2);
@@ -1330,8 +1431,9 @@
     const qty = parseFloat(document.getElementById("buyTTInput").value) || 0;
     if (qty < 1) return showToast("Minimum purchase is 1 TT");
 
-    const tokenTon = qty * currentTonPerTT;
-    const totalTon = Number((tokenTon + CONFIG.SERVICE_FEE_TON).toFixed(4));
+    const discPct = getDiscountPercent(qty);
+    const discountedTokenTon = (qty * currentTonPerTT) * (1 - discPct / 100);
+    const totalTon = Number((discountedTokenTon + CONFIG.SERVICE_FEE_TON).toFixed(4));
 
     if (state.tonBalance < totalTon + 0.02) {
       return showToast(`⚠️ Insufficient TON (Need ${(totalTon + 0.02).toFixed(3)} TON)`);
@@ -1359,12 +1461,13 @@
           username: tgUser.username || "",
           ttAmount: qty,
           tonPaid: totalTon,
+          discountPct: discPct,
           wallet: state.walletAddress
         })
       });
 
       state.activities.unshift({
-        title: `Direct Buy Order: ${qty} TT`,
+        title: `Direct Buy: ${qty} TT (-${discPct}%)`,
         date: new Date().toLocaleDateString(),
         amount: `-${totalTon.toFixed(3)} TON`
       });
@@ -1379,18 +1482,6 @@
   window.copyContract = function() {
     navigator.clipboard.writeText(CONFIG.JETTON_ADDRESS);
     showToast("📋 TT Contract Address Copied!");
-  };
-
-  window.completeTask = function(id, reward, url, title) {
-    window.open(url, "_blank");
-    if (!state.completedTasks.includes(id)) {
-      state.completedTasks.push(id);
-      state.appBalance += Number(reward);
-      state.activities.unshift({ title: `Mission: ${title}`, date: new Date().toLocaleDateString(), amount: `+${reward} TT` });
-      saveState();
-      renderAll();
-      showToast(`✅ +${reward} TT Earned!`);
-    }
   };
 
   window.claimDailyStreak = function() {
@@ -1473,8 +1564,7 @@
           username: tgUser.username || "",
           amount: amt,
           wallet: state.walletAddress,
-          onChainTT: state.onChainTT,
-          level: state.level
+          onChainTT: state.onChainTT
         })
       });
       const out = await res.json();
@@ -1577,7 +1667,6 @@
     document.getElementById("gridLeague").textContent = getLeagueName(state.level);
     document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • Tap for 1-100`;
 
-    // 8 TT Wallet Hold Eligibility Badge in Wallet Tab
     document.getElementById("walletCurrentHoldLabel").textContent = state.onChainTT.toFixed(2);
     const wdBadge = document.getElementById("wdHoldStatusBadge");
     if (state.onChainTT >= CONFIG.MIN_WITHDRAW_HOLD_TT) {
@@ -1619,9 +1708,20 @@
 
     window.recalcDirectBuy();
 
+    // Render Tasks with 2-Step Go -> Verify Button
     document.getElementById("tasksContainer").innerHTML = dynamicTasks.map(t => {
       const done = state.completedTasks.includes(t.id);
+      const isOpened = openedTasks.has(t.id);
       const safeTitle = String(t.title).replace(/'/g, "");
+      let btnLabel = "Go";
+      let btnStyle = "gold-btn";
+      if (done) {
+        btnLabel = "Claimed ✓";
+        btnStyle = "bg-white/10 text-emerald-400";
+      } else if (isOpened) {
+        btnLabel = "Verify";
+        btnStyle = "bg-emerald-400 text-black";
+      }
       return `
         <div class="gold-card rounded-2xl p-4 flex items-center justify-between gap-3">
           <div class="space-y-1">
@@ -1630,8 +1730,8 @@
             <div class="text-xs text-zinc-400">${t.desc || 'Complete mission & earn TT'}</div>
             <div class="text-xs font-extrabold text-amber-300 pt-1">+${t.reward} TT</div>
           </div>
-          <button onclick="completeTask('${t.id}', ${t.reward}, '${t.url}', '${safeTitle}')" class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${done ? 'bg-white/10 text-emerald-400' : 'gold-btn'}">
-            ${done ? 'Claimed ✓' : 'Go'}
+          <button onclick="handleTaskAction('${t.id}', ${t.reward}, '${t.url}', '${safeTitle}')" class="px-4 py-2 rounded-xl text-xs font-extrabold shrink-0 ${btnStyle}">
+            ${btnLabel}
           </button>
         </div>`;
     }).join("");
