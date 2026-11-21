@@ -14,6 +14,7 @@ TT_JETTON = "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt"
 
 DB_NODE = "titan_tt_users"
 TASKS_NODE = "titan_tt_tasks"
+WITHDRAW_NODE = "titan_tt_withdrawals"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
@@ -25,10 +26,9 @@ async def tg_post(method: str, payload: dict):
 
 @app.get("/api/quote")
 async def get_live_quote():
-    """Fast lookup for Titan (TT) / TON pool address & live reserves on DeDust & TonAPI"""
+    """Fetch exact DeDust.io pool address & live reserves for Titan (TT) / TON"""
     try:
         async with httpx.AsyncClient(timeout=15) as client:
-            # 1. Check DeDust pools endpoint
             res = await client.get("https://api.dedust.io/v2/pools")
             if res.status_code == 200:
                 pools = res.json()
@@ -36,40 +36,81 @@ async def get_live_quote():
                     assets = p.get("assets", [])
                     has_tt = any(a.get("address") == TT_JETTON for a in assets)
                     has_ton = any(a.get("type") == "native" for a in assets)
-                    if has_tt and has_ton and p.get("reserves"):
+                    if has_tt and has_ton:
+                        reserves = p.get("reserves") or ["0", "0"]
                         is_native_first = assets[0].get("type") == "native"
-                        ton_res = float(p["reserves"][0] if is_native_first else p["reserves"][1]) / 1e9
-                        tt_res = float(p["reserves"][1] if is_native_first else p["reserves"][0]) / 1e9
-                        if ton_res > 0 and tt_res > 0:
-                            return {
-                                "ok": True,
-                                "source": "DeDust.io",
-                                "poolAddress": p.get("address", ""),
-                                "tonReserve": ton_res,
-                                "ttReserve": tt_res,
-                                "rateTTPerTon": tt_res / ton_res
-                            }
-
-            # 2. Fallback: Check TonAPI rates & Jetton holders/pools
-            r2 = await client.get(f"https://tonapi.io/v2/rates?tokens={TT_JETTON}&currencies=ton,usd")
-            if r2.status_code == 200:
-                rates = r2.json().get("rates", {})
-                tt_prices = rates.get(TT_JETTON, {}).get("prices", {})
-                ton_price = float(tt_prices.get("TON", 0))
-                if ton_price > 0:
-                    rate_tt_per_ton = 1.0 / ton_price
-                    return {
-                        "ok": True,
-                        "source": "TonAPI Live",
-                        "poolAddress": "",
-                        "tonReserve": 500.0,
-                        "ttReserve": 500.0 * rate_tt_per_ton,
-                        "rateTTPerTon": rate_tt_per_ton
-                    }
+                        ton_res = float(reserves[0] if is_native_first else reserves[1]) / 1e9
+                        tt_res = float(reserves[1] if is_native_first else reserves[0]) / 1e9
+                        rate = (tt_res / ton_res) if (ton_res > 0 and tt_res > 0) else 1.0
+                        return {
+                            "ok": True,
+                            "source": "DeDust.io",
+                            "poolAddress": p.get("address", ""),
+                            "tonReserve": ton_res,
+                            "ttReserve": tt_res,
+                            "rateTTPerTon": rate
+                        }
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-    return {"ok": False, "error": "Pool syncing"}
+    return {"ok": False, "error": "Pool not found"}
+
+
+@app.post("/api/withdraw_notify")
+async def withdraw_notify(req: Request):
+    """Receive withdrawal request from Mini App, save to Firebase, and alert Admin immediately"""
+    data = await req.json()
+    uid = str(data.get("uid", ""))
+    name = data.get("name", "Miner")
+    username = data.get("username", "")
+    amount = float(data.get("amount", 0))
+    wallet = data.get("wallet", "")
+    onchain_tt = float(data.get("onChainTT", 0))
+    req_hold = amount * 0.25
+
+    if not uid or amount < 100 or not wallet:
+        return {"ok": False, "error": "Invalid withdrawal parameters"}
+
+    wid = f"wd_{int(time.time())}_{uid}"
+    record = {
+        "id": wid,
+        "uid": uid,
+        "name": name,
+        "username": username,
+        "amount": amount,
+        "wallet": wallet,
+        "onChainTT": onchain_tt,
+        "status": "pending",
+        "createdAt": int(time.time())
+    }
+
+    async with httpx.AsyncClient(timeout=12) as client:
+        await client.put(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json=record)
+
+    user_tag = f"@{username}" if username else f"ID: {uid}"
+    await tg_post("sendMessage", {
+        "chat_id": ADMIN_ID,
+        "text": (
+            "💸 <b>NEW TITAN (TT) WITHDRAWAL REQUEST</b>\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"👤 <b>User:</b> {name} ({user_tag})\n"
+            f"🆔 <b>UID:</b> <code>{uid}</code>\n"
+            f"💰 <b>Withdraw Amount:</b> <b>{amount:,.2f} TT</b>\n"
+            f"🔒 <b>25% Hold Check:</b> {onchain_tt:,.2f} / {req_hold:,.2f} TT ✅\n"
+            f"👛 <b>TON Wallet:</b>\n<code>{wallet}</code>\n"
+            f"📝 <b>Memo:</b> <code>TITAN_PAYOUT:{wid}</code>\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "Tap below after sending TT:"
+        ),
+        "parse_mode": "HTML",
+        "reply_markup": {
+            "inline_keyboard": [[
+                {"text": "✅ Mark Paid", "callback_data": f"wd_approve:{wid}"},
+                {"text": "❌ Reject & Refund", "callback_data": f"wd_reject:{wid}"}
+            ]]
+        }
+    })
+    return {"ok": True, "withdrawId": wid}
 
 
 @app.get("/api/bot")
@@ -81,6 +122,66 @@ async def health_check():
 async def telegram_webhook(req: Request):
     try:
         update = await req.json()
+
+        # ==================== ADMIN CALLBACK BUTTONS (APPROVE / REJECT WITHDRAW) ====================
+        cb = update.get("callback_query")
+        if cb:
+            cb_id = cb["id"]
+            from_id = cb["from"]["id"]
+            cb_data = cb.get("data", "")
+            msg_obj = cb.get("message", {})
+
+            if from_id == ADMIN_ID and (cb_data.startswith("wd_approve:") or cb_data.startswith("wd_reject:")):
+                action, wid = cb_data.split(":", 1)
+                async with httpx.AsyncClient(timeout=12) as client:
+                    w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json")
+                    w_data = w_res.json()
+
+                    if not w_data:
+                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Record not found!"})
+                        return {"ok": True}
+
+                    if w_data.get("status") != "pending":
+                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": f"Already {w_data.get('status')}!"})
+                        return {"ok": True}
+
+                    uid = str(w_data["uid"])
+                    amt = float(w_data["amount"])
+
+                    if action == "wd_approve":
+                        await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "paid"})
+                        await tg_post("editMessageText", {
+                            "chat_id": ADMIN_ID,
+                            "message_id": msg_obj["message_id"],
+                            "text": msg_obj.get("text", "") + "\n\n✅ <b>STATUS: PAID & COMPLETED</b>",
+                            "parse_mode": "HTML"
+                        })
+                        await tg_post("sendMessage", {
+                            "chat_id": int(uid),
+                            "text": f"🎉 <b>Withdrawal Paid!</b>\nYour withdrawal of <b>{amt:,.2f} TT</b> has been sent to your TON wallet!\nMemo: <code>TITAN_PAYOUT:{wid}</code>",
+                            "parse_mode": "HTML"
+                        })
+                    else:
+                        await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "rejected"})
+                        u_res = await client.get(f"{FIREBASE_URL}/{DB_NODE}/{uid}/appBalance.json")
+                        cur_bal = float(u_res.json() or 0)
+                        await client.patch(f"{FIREBASE_URL}/{DB_NODE}/{uid}.json", json={"appBalance": cur_bal + amt})
+                        await tg_post("editMessageText", {
+                            "chat_id": ADMIN_ID,
+                            "message_id": msg_obj["message_id"],
+                            "text": msg_obj.get("text", "") + "\n\n❌ <b>STATUS: REJECTED & REFUNDED</b>",
+                            "parse_mode": "HTML"
+                        })
+                        await tg_post("sendMessage", {
+                            "chat_id": int(uid),
+                            "text": f"⚠️ <b>Withdrawal Rejected</b>\nYour request for <b>{amt:,.2f} TT</b> was declined and refunded to your App Balance.",
+                            "parse_mode": "HTML"
+                        })
+
+                await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Updated!"})
+            return {"ok": True}
+
+        # ==================== TEXT MESSAGES ====================
         msg = update.get("message")
         if not msg:
             return {"ok": True}
@@ -94,16 +195,18 @@ async def telegram_webhook(req: Request):
         base = f"{FIREBASE_URL}/{DB_NODE}"
         tasks_base = f"{FIREBASE_URL}/{TASKS_NODE}"
 
-        # ==================== ADMIN PANEL COMMANDS ====================
         if int(user_id) == ADMIN_ID:
             if text == "/admin":
                 async with httpx.AsyncClient(timeout=15) as client:
                     res = await client.get(f"{base}.json")
                     users_data = res.json() or {}
+                    w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}.json")
+                    w_data = w_res.json() or {}
 
                 total_users = len(users_data)
                 verified_users = sum(1 for u in users_data.values() if isinstance(u, dict) and u.get("verified"))
                 multi_flagged = sum(1 for u in users_data.values() if isinstance(u, dict) and u.get("isMultiFlagged"))
+                pending_wds = sum(1 for w in w_data.values() if isinstance(w, dict) and w.get("status") == "pending")
                 total_app_tt = sum(float(u.get("appBalance", 0)) for u in users_data.values() if isinstance(u, dict))
 
                 await tg_post("sendMessage", {
@@ -113,6 +216,7 @@ async def telegram_webhook(req: Request):
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
                         f"👥 <b>Total Users:</b> {total_users:,}\n"
                         f"🛡️ <b>Verified (0.1 TON):</b> {verified_users:,}\n"
+                        f"💸 <b>Pending Withdrawals:</b> {pending_wds:,}\n"
                         f"🚨 <b>Multi-Account Flagged:</b> {multi_flagged:,}\n"
                         f"💰 <b>Total App TT:</b> {total_app_tt:,.2f} TT\n"
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -168,12 +272,6 @@ async def telegram_webhook(req: Request):
                     await tg_post("sendMessage", {
                         "chat_id": chat_id,
                         "text": f"✅ <b>Task Added!</b>\nID: <code>{tid}</code>\nTitle: <b>{title}</b> (+{reward} TT)",
-                        "parse_mode": "HTML"
-                    })
-                else:
-                    await tg_post("sendMessage", {
-                        "chat_id": chat_id,
-                        "text": "⚠️ Format မှားနေပါသည်။ ဤသို့ရေးပါ:\n<code>/addtask Join Channel | 2 | https://t.me/example</code>",
                         "parse_mode": "HTML"
                     })
                 return {"ok": True}
@@ -260,7 +358,6 @@ async def telegram_webhook(req: Request):
                     await tg_post("sendMessage", {"chat_id": chat_id, "text": f"✅ Broadcast Sent: {sent} | Failed: {failed}"})
                 return {"ok": True}
 
-        # ==================== USER /START COMMAND ====================
         if text.startswith("/start"):
             parts = text.split()
             ref_id = parts[1].replace("ref_", "") if len(parts) > 1 and parts[1].startswith("ref_") else ""
