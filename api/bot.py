@@ -123,10 +123,9 @@ async def withdraw_notify(req: Request):
     amount = float(data.get("amount", 0))
     wallet = data.get("wallet", "")
     onchain_tt = float(data.get("onChainTT", 0))
-    req_hold = amount * 0.25
 
-    if not uid or amount < 100 or not wallet:
-        return {"ok": False, "error": "Invalid withdrawal parameters"}
+    if not uid or amount < 100 or not wallet or onchain_tt < 8.0:
+        return {"ok": False, "error": "Invalid withdrawal parameters or Hold < 8 TT"}
 
     wid = f"wd_{int(time.time())}_{uid}"
     record = {
@@ -153,7 +152,7 @@ async def withdraw_notify(req: Request):
             f"👤 <b>User:</b> {name} ({user_tag})\n"
             f"🆔 <b>UID:</b> <code>{uid}</code>\n"
             f"💰 <b>Withdraw Amount:</b> <b>{amount:,.2f} TT</b>\n"
-            f"🔒 <b>25% Hold Check:</b> {onchain_tt:,.2f} / {req_hold:,.2f} TT ✅\n"
+            f"🔒 <b>On-Chain Hold:</b> <b>{onchain_tt:,.2f} / 8.00 TT</b> ✅\n"
             f"👛 <b>TON Wallet:</b>\n<code>{wallet}</code>\n"
             f"📝 <b>Memo:</b> <code>TITAN_PAYOUT:{wid}</code>\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -180,7 +179,6 @@ async def telegram_webhook(req: Request):
     try:
         update = await req.json()
 
-        # ==================== ADMIN CALLBACK BUTTONS ====================
         cb = update.get("callback_query")
         if cb:
             cb_id = cb["id"]
@@ -259,7 +257,6 @@ async def telegram_webhook(req: Request):
                     await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Updated!"})
             return {"ok": True}
 
-        # ==================== TEXT MESSAGES ====================
         msg = update.get("message")
         if not msg:
             return {"ok": True}
@@ -547,7 +544,7 @@ async def telegram_webhook(req: Request):
                                     "chat_id": int(ref_id),
                                     "text": (
                                         f"👥 <b>New Referral Joined!</b>\n"
-                                        f"<b>{first_name}</b> joined via your link. Once they verify (0.1 TON) AND hold at least <b>8 TT (Lv.2)</b>, "
+                                        f"<b>{first_name}</b> joined via your link. Once they verify (0.1 TON) AND hold at least <b>8 TT</b>, "
                                         f"they count toward your Monthly Leaderboard (1,000 TT Pool) & you earn <b>5%</b> of their mining claims!"
                                     ),
                                     "parse_mode": "HTML"
