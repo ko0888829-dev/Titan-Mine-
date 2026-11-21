@@ -1,5 +1,6 @@
 import os
 import time
+import base64
 import asyncio
 import httpx
 from fastapi import FastAPI, Request
@@ -11,6 +12,7 @@ WEBAPP_URL = os.getenv("WEBAPP_URL", "https://titan-mine-bot.vercel.app").strip(
 FIREBASE_URL = os.getenv("FIREBASE_URL", "https://adpro-bot-default-rtdb.firebaseio.com").strip().rstrip("/")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5330848428"))
 TT_JETTON = "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt"
+DEDUST_FACTORY = "EQBfBWT7X2BHg9tXAxzhz2aKiNTU1tpt5NsiK0uSDW_YAJ67"
 
 DB_NODE = "titan_tt_users"
 TASKS_NODE = "titan_tt_tasks"
@@ -26,39 +28,67 @@ async def tg_post(method: str, payload: dict):
 
 @app.get("/api/quote")
 async def get_live_quote():
-    """Fetch exact DeDust.io pool address & live reserves for Titan (TT) / TON"""
+    """Resolve exact DeDust Volatile Pool Address & live reserves for TON / TT"""
+    pool_addr = ""
+    ton_res = 0.0
+    tt_res = 0.0
+
     try:
         async with httpx.AsyncClient(timeout=15) as client:
-            res = await client.get("https://api.dedust.io/v2/pools")
-            if res.status_code == 200:
-                pools = res.json()
-                for p in pools:
-                    assets = p.get("assets", [])
-                    has_tt = any(a.get("address") == TT_JETTON for a in assets)
-                    has_ton = any(a.get("type") == "native" for a in assets)
-                    if has_tt and has_ton:
-                        reserves = p.get("reserves") or ["0", "0"]
-                        is_native_first = assets[0].get("type") == "native"
-                        ton_res = float(reserves[0] if is_native_first else reserves[1]) / 1e9
-                        tt_res = float(reserves[1] if is_native_first else reserves[0]) / 1e9
-                        rate = (tt_res / ton_res) if (ton_res > 0 and tt_res > 0) else 1.0
-                        return {
-                            "ok": True,
-                            "source": "DeDust.io",
-                            "poolAddress": p.get("address", ""),
-                            "tonReserve": ton_res,
-                            "ttReserve": tt_res,
-                            "rateTTPerTon": rate
-                        }
+            # 1. Try DeDust /v2/pools fast search
+            try:
+                res = await client.get("https://api.dedust.io/v2/pools")
+                if res.status_code == 200:
+                    for p in res.json():
+                        assets = p.get("assets", [])
+                        has_tt = any(a.get("address") == TT_JETTON for a in assets)
+                        has_ton = any(a.get("type") == "native" for a in assets)
+                        if has_tt and has_ton:
+                            pool_addr = p.get("address", "")
+                            reserves = p.get("reserves") or ["0", "0"]
+                            is_native_first = assets[0].get("type") == "native"
+                            ton_res = float(reserves[0] if is_native_first else reserves[1]) / 1e9
+                            tt_res = float(reserves[1] if is_native_first else reserves[0]) / 1e9
+                            break
+            except Exception:
+                pass
+
+            # 2. If not in top list, query TonAPI for Jetton top holders / DeDust Vault pool
+            if not pool_addr:
+                h_res = await client.get(f"https://tonapi.io/v2/jettons/{TT_JETTON}/holders?limit=20")
+                if h_res.status_code == 200:
+                    for h in h_res.json().get("addresses", []):
+                        owner = h.get("owner", {})
+                        name = (owner.get("name") or "").lower()
+                        if "dedust" in name or "pool" in name:
+                            pool_addr = owner.get("address", "")
+                            break
+
+            # 3. Query pool reserves directly on-chain via TonAPI if pool_addr found
+            if pool_addr and (ton_res == 0 or tt_res == 0):
+                m_res = await client.get(f"https://tonapi.io/v2/blockchain/accounts/{pool_addr}/methods/get_reserves")
+                if m_res.status_code == 200:
+                    stack = m_res.json().get("stack", [])
+                    if len(stack) >= 2:
+                        r0 = int(stack[0].get("num", "0x0"), 16) / 1e9
+                        r1 = int(stack[1].get("num", "0x0"), 16) / 1e9
+                        if r0 > 0 and r1 > 0:
+                            ton_res, tt_res = r0, r1
+
+            rate = (tt_res / ton_res) if (ton_res > 0 and tt_res > 0) else 1.0
+            return {
+                "ok": True,
+                "poolAddress": pool_addr,
+                "tonReserve": ton_res,
+                "ttReserve": tt_res,
+                "rateTTPerTon": rate
+            }
     except Exception as e:
         return {"ok": False, "error": str(e)}
-
-    return {"ok": False, "error": "Pool not found"}
 
 
 @app.post("/api/withdraw_notify")
 async def withdraw_notify(req: Request):
-    """Receive withdrawal request from Mini App, save to Firebase, and alert Admin immediately"""
     data = await req.json()
     uid = str(data.get("uid", ""))
     name = data.get("name", "Miner")
@@ -123,7 +153,6 @@ async def telegram_webhook(req: Request):
     try:
         update = await req.json()
 
-        # ==================== ADMIN CALLBACK BUTTONS (APPROVE / REJECT WITHDRAW) ====================
         cb = update.get("callback_query")
         if cb:
             cb_id = cb["id"]
@@ -137,12 +166,8 @@ async def telegram_webhook(req: Request):
                     w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json")
                     w_data = w_res.json()
 
-                    if not w_data:
-                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Record not found!"})
-                        return {"ok": True}
-
-                    if w_data.get("status") != "pending":
-                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": f"Already {w_data.get('status')}!"})
+                    if not w_data or w_data.get("status") != "pending":
+                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Already processed!"})
                         return {"ok": True}
 
                     uid = str(w_data["uid"])
@@ -181,7 +206,6 @@ async def telegram_webhook(req: Request):
                 await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Updated!"})
             return {"ok": True}
 
-        # ==================== TEXT MESSAGES ====================
         msg = update.get("message")
         if not msg:
             return {"ok": True}
@@ -384,8 +408,8 @@ async def telegram_webhook(req: Request):
                                     "chat_id": int(ref_id),
                                     "text": (
                                         f"👥 <b>New Referral Joined!</b>\n"
-                                        f"<b>{first_name}</b> joined via your link. Once they verify their wallet (0.1 TON), "
-                                        f"you earn <b>+5 TT</b> + <b>5%</b> of all their mining claims!"
+                                        f"<b>{first_name}</b> joined via your link. Once they verify (0.1 TON) AND hold at least <b>8 TT (Lv.2)</b>, "
+                                        f"you earn <b>5%</b> of all their mining claims!"
                                     ),
                                     "parse_mode": "HTML"
                                 })
@@ -399,7 +423,7 @@ async def telegram_webhook(req: Request):
                     f"⚡ <b>Welcome to TITAN (TT) Web3 Mining, {first_name}!</b>\n\n"
                     "🪙 <b>Coin:</b> Titan (TT) on TON (~$1.00)\n"
                     "⛏️ <b>Mining Rate:</b> 10 TT/day (0.42 TT/hr) • Up to 500 TT/day at Lv.100\n"
-                    "👥 <b>Referral Reward:</b> +5 TT per verified friend + 5% lifetime mining commission\n\n"
+                    "👥 <b>Referral Reward:</b> 5% commission from friends holding Lv.2+ (8+ TT)\n\n"
                     "Tap below to launch your mining rig:"
                 ),
                 "parse_mode": "HTML",
