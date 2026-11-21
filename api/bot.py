@@ -155,7 +155,6 @@ async def telegram_webhook(req: Request):
             msg_obj = cb.get("message", {})
 
             if from_id == ADMIN_ID:
-                # 1. Direct Buy TT Delivered
                 if cb_data.startswith("buy_done:"):
                     oid = cb_data.split(":", 1)[1]
                     async with httpx.AsyncClient(timeout=12) as client:
@@ -180,7 +179,6 @@ async def telegram_webhook(req: Request):
                     await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Marked Delivered!"})
                     return {"ok": True}
 
-                # 2. Withdraw Approve / Reject
                 if cb_data.startswith("wd_approve:") or cb_data.startswith("wd_reject:"):
                     action, wid = cb_data.split(":", 1)
                     async with httpx.AsyncClient(timeout=12) as client:
@@ -249,7 +247,7 @@ async def telegram_webhook(req: Request):
                     w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}.json")
                     w_data = w_res.json() or {}
                     s_res = await client.get(f"{FIREBASE_URL}/{SETTINGS_NODE}/tonPerTT.json")
-                    cur_price = s_res.json() or 0.18
+                    cur_price = s_res.json() or 1.171
 
                 total_users = len(users_data)
                 verified_users = sum(1 for u in users_data.values() if isinstance(u, dict) and u.get("verified"))
@@ -270,7 +268,7 @@ async def telegram_webhook(req: Request):
                         f"🏷️ <b>Direct Buy Price:</b> 1 TT = <b>{cur_price} TON</b>\n"
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
                         "💵 <b>Price & Task Management:</b>\n"
-                        "• <code>/setprice 0.18</code> - 1 TT ဈေးနှုန်းပြင်ရန်\n"
+                        "• <code>/setprice 1.171</code> - 1 TT ဈေးနှုန်းပြင်ရန်\n"
                         "• <code>/tasks</code> - လက်ရှိ Task စာရင်းကြည့်ရန်\n"
                         "• <code>/addtask Title | Reward | URL</code>\n"
                         "• <code>/deltask TASK_ID</code> - Task ဖျက်ရန်\n\n"
@@ -462,7 +460,7 @@ async def telegram_webhook(req: Request):
                 "chat_id": chat_id,
                 "text": (
                     f"⚡ <b>Welcome to TITAN (TT) Web3 Mining, {first_name}!</b>\n\n"
-                    "🪙 <b>Coin:</b> Titan (TT) on TON (~$1.00)\n"
+                    "🪙 <b>Coin:</b> Titan (TT) on TON ($1.171)\n"
                     "⛏️ <b>Mining Rate:</b> 10 TT/day (0.42 TT/hr) • Up to 500 TT/day at Lv.100\n"
                     "👥 <b>Referral Reward:</b> 5% commission from friends holding Lv.2+ (8+ TT)\n\n"
                     "Tap below to launch your mining rig:"
