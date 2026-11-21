@@ -1,6 +1,5 @@
 import os
 import time
-import base64
 import asyncio
 import httpx
 from fastapi import FastAPI, Request
@@ -11,12 +10,12 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 WEBAPP_URL = os.getenv("WEBAPP_URL", "https://titan-mine-bot.vercel.app").strip().rstrip("/")
 FIREBASE_URL = os.getenv("FIREBASE_URL", "https://adpro-bot-default-rtdb.firebaseio.com").strip().rstrip("/")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5330848428"))
-TT_JETTON = "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt"
-DEDUST_FACTORY = "EQBfBWT7X2BHg9tXAxzhz2aKiNTU1tpt5NsiK0uSDW_YAJ67"
 
 DB_NODE = "titan_tt_users"
 TASKS_NODE = "titan_tt_tasks"
 WITHDRAW_NODE = "titan_tt_withdrawals"
+ORDERS_NODE = "titan_tt_orders"
+SETTINGS_NODE = "titan_tt_settings"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
@@ -26,65 +25,59 @@ async def tg_post(method: str, payload: dict):
         return res.json()
 
 
-@app.get("/api/quote")
-async def get_live_quote():
-    """Resolve exact DeDust Volatile Pool Address & live reserves for TON / TT"""
-    pool_addr = ""
-    ton_res = 0.0
-    tt_res = 0.0
+@app.post("/api/buy_notify")
+async def buy_notify(req: Request):
+    """Alert Admin when user directly purchases TT with TON inside Mini App"""
+    data = await req.json()
+    uid = str(data.get("uid", ""))
+    name = data.get("name", "Miner")
+    username = data.get("username", "")
+    tt_amount = float(data.get("ttAmount", 0))
+    ton_paid = float(data.get("tonPaid", 0))
+    wallet = data.get("wallet", "")
 
-    try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            # 1. Try DeDust /v2/pools fast search
-            try:
-                res = await client.get("https://api.dedust.io/v2/pools")
-                if res.status_code == 200:
-                    for p in res.json():
-                        assets = p.get("assets", [])
-                        has_tt = any(a.get("address") == TT_JETTON for a in assets)
-                        has_ton = any(a.get("type") == "native" for a in assets)
-                        if has_tt and has_ton:
-                            pool_addr = p.get("address", "")
-                            reserves = p.get("reserves") or ["0", "0"]
-                            is_native_first = assets[0].get("type") == "native"
-                            ton_res = float(reserves[0] if is_native_first else reserves[1]) / 1e9
-                            tt_res = float(reserves[1] if is_native_first else reserves[0]) / 1e9
-                            break
-            except Exception:
-                pass
+    if not uid or tt_amount <= 0 or not wallet:
+        return {"ok": False, "error": "Invalid order"}
 
-            # 2. If not in top list, query TonAPI for Jetton top holders / DeDust Vault pool
-            if not pool_addr:
-                h_res = await client.get(f"https://tonapi.io/v2/jettons/{TT_JETTON}/holders?limit=20")
-                if h_res.status_code == 200:
-                    for h in h_res.json().get("addresses", []):
-                        owner = h.get("owner", {})
-                        name = (owner.get("name") or "").lower()
-                        if "dedust" in name or "pool" in name:
-                            pool_addr = owner.get("address", "")
-                            break
+    oid = f"buy_{int(time.time())}_{uid}"
+    record = {
+        "id": oid,
+        "uid": uid,
+        "name": name,
+        "username": username,
+        "ttAmount": tt_amount,
+        "tonPaid": ton_paid,
+        "wallet": wallet,
+        "status": "paid_ton",
+        "createdAt": int(time.time())
+    }
 
-            # 3. Query pool reserves directly on-chain via TonAPI if pool_addr found
-            if pool_addr and (ton_res == 0 or tt_res == 0):
-                m_res = await client.get(f"https://tonapi.io/v2/blockchain/accounts/{pool_addr}/methods/get_reserves")
-                if m_res.status_code == 200:
-                    stack = m_res.json().get("stack", [])
-                    if len(stack) >= 2:
-                        r0 = int(stack[0].get("num", "0x0"), 16) / 1e9
-                        r1 = int(stack[1].get("num", "0x0"), 16) / 1e9
-                        if r0 > 0 and r1 > 0:
-                            ton_res, tt_res = r0, r1
+    async with httpx.AsyncClient(timeout=12) as client:
+        await client.put(f"{FIREBASE_URL}/{ORDERS_NODE}/{oid}.json", json=record)
 
-            rate = (tt_res / ton_res) if (ton_res > 0 and tt_res > 0) else 1.0
-            return {
-                "ok": True,
-                "poolAddress": pool_addr,
-                "tonReserve": ton_res,
-                "ttReserve": tt_res,
-                "rateTTPerTon": rate
-            }
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    user_tag = f"@{username}" if username else f"ID: {uid}"
+    await tg_post("sendMessage", {
+        "chat_id": ADMIN_ID,
+        "text": (
+            "💰 <b>NEW DIRECT TT PURCHASE ORDER</b>\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"👤 <b>Buyer:</b> {name} ({user_tag})\n"
+            f"🆔 <b>UID:</b> <code>{uid}</code>\n"
+            f"💎 <b>TON Paid:</b> <b>{ton_paid:.4f} TON</b> (incl. 0.1 fee)\n"
+            f"🪙 <b>Send TT Amount:</b> <b>{tt_amount:,.2f} TT</b>\n"
+            f"👛 <b>Buyer TON Wallet:</b>\n<code>{wallet}</code>\n"
+            f"📝 <b>Tx Memo:</b> <code>TITAN_BUY:{uid}:{tt_amount}</code>\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "Send TT to buyer wallet & tap below:"
+        ),
+        "parse_mode": "HTML",
+        "reply_markup": {
+            "inline_keyboard": [[
+                {"text": "✅ Mark TT Sent", "callback_data": f"buy_done:{oid}"}
+            ]]
+        }
+    })
+    return {"ok": True, "orderId": oid}
 
 
 @app.post("/api/withdraw_notify")
@@ -153,6 +146,7 @@ async def telegram_webhook(req: Request):
     try:
         update = await req.json()
 
+        # ==================== ADMIN CALLBACK BUTTONS ====================
         cb = update.get("callback_query")
         if cb:
             cb_id = cb["id"]
@@ -160,52 +154,80 @@ async def telegram_webhook(req: Request):
             cb_data = cb.get("data", "")
             msg_obj = cb.get("message", {})
 
-            if from_id == ADMIN_ID and (cb_data.startswith("wd_approve:") or cb_data.startswith("wd_reject:")):
-                action, wid = cb_data.split(":", 1)
-                async with httpx.AsyncClient(timeout=12) as client:
-                    w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json")
-                    w_data = w_res.json()
+            if from_id == ADMIN_ID:
+                # 1. Direct Buy TT Delivered
+                if cb_data.startswith("buy_done:"):
+                    oid = cb_data.split(":", 1)[1]
+                    async with httpx.AsyncClient(timeout=12) as client:
+                        o_res = await client.get(f"{FIREBASE_URL}/{ORDERS_NODE}/{oid}.json")
+                        o_data = o_res.json()
+                        if not o_data or o_data.get("status") == "delivered":
+                            await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Already delivered!"})
+                            return {"ok": True}
 
-                    if not w_data or w_data.get("status") != "pending":
-                        await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Already processed!"})
-                        return {"ok": True}
-
-                    uid = str(w_data["uid"])
-                    amt = float(w_data["amount"])
-
-                    if action == "wd_approve":
-                        await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "paid"})
+                        await client.patch(f"{FIREBASE_URL}/{ORDERS_NODE}/{oid}.json", json={"status": "delivered"})
                         await tg_post("editMessageText", {
                             "chat_id": ADMIN_ID,
                             "message_id": msg_obj["message_id"],
-                            "text": msg_obj.get("text", "") + "\n\n✅ <b>STATUS: PAID & COMPLETED</b>",
+                            "text": msg_obj.get("text", "") + "\n\n✅ <b>STATUS: TT SENT TO BUYER</b>",
                             "parse_mode": "HTML"
                         })
                         await tg_post("sendMessage", {
-                            "chat_id": int(uid),
-                            "text": f"🎉 <b>Withdrawal Paid!</b>\nYour withdrawal of <b>{amt:,.2f} TT</b> has been sent to your TON wallet!\nMemo: <code>TITAN_PAYOUT:{wid}</code>",
+                            "chat_id": int(o_data["uid"]),
+                            "text": f"🎉 <b>TT Order Delivered!</b>\n<b>{o_data['ttAmount']:,.2f} TT</b> has been sent to your TON wallet!\nRefresh your wallet balance in TITAN App to see your new level.",
                             "parse_mode": "HTML"
                         })
-                    else:
-                        await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "rejected"})
-                        u_res = await client.get(f"{FIREBASE_URL}/{DB_NODE}/{uid}/appBalance.json")
-                        cur_bal = float(u_res.json() or 0)
-                        await client.patch(f"{FIREBASE_URL}/{DB_NODE}/{uid}.json", json={"appBalance": cur_bal + amt})
-                        await tg_post("editMessageText", {
-                            "chat_id": ADMIN_ID,
-                            "message_id": msg_obj["message_id"],
-                            "text": msg_obj.get("text", "") + "\n\n❌ <b>STATUS: REJECTED & REFUNDED</b>",
-                            "parse_mode": "HTML"
-                        })
-                        await tg_post("sendMessage", {
-                            "chat_id": int(uid),
-                            "text": f"⚠️ <b>Withdrawal Rejected</b>\nYour request for <b>{amt:,.2f} TT</b> was declined and refunded to your App Balance.",
-                            "parse_mode": "HTML"
-                        })
+                    await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Marked Delivered!"})
+                    return {"ok": True}
 
-                await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Updated!"})
+                # 2. Withdraw Approve / Reject
+                if cb_data.startswith("wd_approve:") or cb_data.startswith("wd_reject:"):
+                    action, wid = cb_data.split(":", 1)
+                    async with httpx.AsyncClient(timeout=12) as client:
+                        w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json")
+                        w_data = w_res.json()
+
+                        if not w_data or w_data.get("status") != "pending":
+                            await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Already processed!"})
+                            return {"ok": True}
+
+                        uid = str(w_data["uid"])
+                        amt = float(w_data["amount"])
+
+                        if action == "wd_approve":
+                            await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "paid"})
+                            await tg_post("editMessageText", {
+                                "chat_id": ADMIN_ID,
+                                "message_id": msg_obj["message_id"],
+                                "text": msg_obj.get("text", "") + "\n\n✅ <b>STATUS: PAID & COMPLETED</b>",
+                                "parse_mode": "HTML"
+                            })
+                            await tg_post("sendMessage", {
+                                "chat_id": int(uid),
+                                "text": f"🎉 <b>Withdrawal Paid!</b>\nYour withdrawal of <b>{amt:,.2f} TT</b> has been sent to your TON wallet!\nMemo: <code>TITAN_PAYOUT:{wid}</code>",
+                                "parse_mode": "HTML"
+                            })
+                        else:
+                            await client.patch(f"{FIREBASE_URL}/{WITHDRAW_NODE}/{wid}.json", json={"status": "rejected"})
+                            u_res = await client.get(f"{FIREBASE_URL}/{DB_NODE}/{uid}/appBalance.json")
+                            cur_bal = float(u_res.json() or 0)
+                            await client.patch(f"{FIREBASE_URL}/{DB_NODE}/{uid}.json", json={"appBalance": cur_bal + amt})
+                            await tg_post("editMessageText", {
+                                "chat_id": ADMIN_ID,
+                                "message_id": msg_obj["message_id"],
+                                "text": msg_obj.get("text", "") + "\n\n❌ <b>STATUS: REJECTED & REFUNDED</b>",
+                                "parse_mode": "HTML"
+                            })
+                            await tg_post("sendMessage", {
+                                "chat_id": int(uid),
+                                "text": f"⚠️ <b>Withdrawal Rejected</b>\nYour request for <b>{amt:,.2f} TT</b> was declined and refunded to your App Balance.",
+                                "parse_mode": "HTML"
+                            })
+
+                    await tg_post("answerCallbackQuery", {"callback_query_id": cb_id, "text": "Updated!"})
             return {"ok": True}
 
+        # ==================== TEXT MESSAGES ====================
         msg = update.get("message")
         if not msg:
             return {"ok": True}
@@ -226,6 +248,8 @@ async def telegram_webhook(req: Request):
                     users_data = res.json() or {}
                     w_res = await client.get(f"{FIREBASE_URL}/{WITHDRAW_NODE}.json")
                     w_data = w_res.json() or {}
+                    s_res = await client.get(f"{FIREBASE_URL}/{SETTINGS_NODE}/tonPerTT.json")
+                    cur_price = s_res.json() or 0.18
 
                 total_users = len(users_data)
                 verified_users = sum(1 for u in users_data.values() if isinstance(u, dict) and u.get("verified"))
@@ -243,8 +267,10 @@ async def telegram_webhook(req: Request):
                         f"💸 <b>Pending Withdrawals:</b> {pending_wds:,}\n"
                         f"🚨 <b>Multi-Account Flagged:</b> {multi_flagged:,}\n"
                         f"💰 <b>Total App TT:</b> {total_app_tt:,.2f} TT\n"
+                        f"🏷️ <b>Direct Buy Price:</b> 1 TT = <b>{cur_price} TON</b>\n"
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                        "📋 <b>Task Management:</b>\n"
+                        "💵 <b>Price & Task Management:</b>\n"
+                        "• <code>/setprice 0.18</code> - 1 TT ဈေးနှုန်းပြင်ရန်\n"
                         "• <code>/tasks</code> - လက်ရှိ Task စာရင်းကြည့်ရန်\n"
                         "• <code>/addtask Title | Reward | URL</code>\n"
                         "• <code>/deltask TASK_ID</code> - Task ဖျက်ရန်\n\n"
@@ -256,6 +282,21 @@ async def telegram_webhook(req: Request):
                     ),
                     "parse_mode": "HTML"
                 })
+                return {"ok": True}
+
+            if text.startswith("/setprice "):
+                try:
+                    new_price = float(text.split()[1].strip())
+                    if new_price > 0:
+                        async with httpx.AsyncClient(timeout=10) as client:
+                            await client.put(f"{FIREBASE_URL}/{SETTINGS_NODE}/tonPerTT.json", json=new_price)
+                        await tg_post("sendMessage", {
+                            "chat_id": chat_id,
+                            "text": f"✅ Direct Buy Price updated: <b>1 TT = {new_price} TON</b>",
+                            "parse_mode": "HTML"
+                        })
+                except Exception:
+                    pass
                 return {"ok": True}
 
             if text == "/tasks":
@@ -429,8 +470,7 @@ async def telegram_webhook(req: Request):
                 "parse_mode": "HTML",
                 "reply_markup": {
                     "inline_keyboard": [
-                        [{"text": "⚡ Launch TITAN Mining App", "web_app": {"url": launch_url}}],
-                        [{"text": "📊 Trade TT on DeDust.io", "url": "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt"}]
+                        [{"text": "⚡ Launch TITAN Mining App", "web_app": {"url": launch_url}}]
                     ]
                 }
             })
