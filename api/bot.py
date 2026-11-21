@@ -18,6 +18,25 @@ ORDERS_NODE = "titan_tt_orders"
 SETTINGS_NODE = "titan_tt_settings"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
+CACHED_BOT_USERNAME = ""
+
+
+def get_rank_prize(rank: int) -> float:
+    """Exact 1,000 TT Monthly Prize Distribution across Ranks 1 to 50"""
+    if rank == 1:
+        return 200.0
+    if rank == 2:
+        return 120.0
+    if rank == 3:
+        return 80.0
+    if 4 <= rank <= 10:
+        return 30.0   # 7 * 30 = 210 TT
+    if 11 <= rank <= 25:
+        return 14.0   # 15 * 14 = 210 TT
+    if 26 <= rank <= 50:
+        return 7.2    # 25 * 7.2 = 180 TT (Total = 1,000 TT)
+    return 0.0
+
 
 async def tg_post(method: str, payload: dict):
     async with httpx.AsyncClient(timeout=15) as client:
@@ -25,9 +44,26 @@ async def tg_post(method: str, payload: dict):
         return res.json()
 
 
+@app.get("/api/bot_info")
+async def get_bot_info():
+    """Fetch exact Telegram Bot Username automatically so Invite Links never fail"""
+    global CACHED_BOT_USERNAME
+    if CACHED_BOT_USERNAME:
+        return {"ok": True, "username": CACHED_BOT_USERNAME}
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            res = await client.get(f"{TG_API}/getMe")
+            data = res.json()
+            if data.get("ok"):
+                CACHED_BOT_USERNAME = data["result"]["username"]
+                return {"ok": True, "username": CACHED_BOT_USERNAME}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+    return {"ok": False}
+
+
 @app.post("/api/buy_notify")
 async def buy_notify(req: Request):
-    """Alert Admin when user directly purchases TT with TON inside Mini App"""
     data = await req.json()
     uid = str(data.get("uid", ""))
     name = data.get("name", "Miner")
@@ -267,6 +303,8 @@ async def telegram_webhook(req: Request):
                         f"💰 <b>Total App TT:</b> {total_app_tt:,.2f} TT\n"
                         f"🏷️ <b>Direct Buy Price:</b> 1 TT = <b>{cur_price} TON</b>\n"
                         "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        "🏆 <b>Monthly Leaderboard (1,000 TT Pool):</b>\n"
+                        "• <code>/payout_lb</code> - Top 1-50 ဆုကြေးခွဲဝေပြီး လသစ် Reset ချရန်\n\n"
                         "💵 <b>Price & Task Management:</b>\n"
                         "• <code>/setprice 1.171</code> - 1 TT ဈေးနှုန်းပြင်ရန်\n"
                         "• <code>/tasks</code> - လက်ရှိ Task စာရင်းကြည့်ရန်\n"
@@ -277,6 +315,69 @@ async def telegram_webhook(req: Request):
                         "• <code>/ban USER_ID</code> | <code>/unban USER_ID</code>\n"
                         "• <code>/addtt USER_ID AMOUNT</code>\n"
                         "• <code>/broadcast စာသား</code>"
+                    ),
+                    "parse_mode": "HTML"
+                })
+                return {"ok": True}
+
+            # ==================== MONTHLY LEADERBOARD PAYOUT (TOP 1-50 = 1,000 TT) ====================
+            if text == "/payout_lb":
+                async with httpx.AsyncClient(timeout=20) as client:
+                    res = await client.get(f"{base}.json")
+                    users_data = res.json() or {}
+
+                    ranked = []
+                    for uid, u in users_data.items():
+                        if isinstance(u, dict) and not u.get("banned") and not u.get("isMultiFlagged"):
+                            m_qual = int(u.get("monthlyQualified", u.get("qualified", 0)))
+                            if m_qual > 0:
+                                ranked.append((uid, u, m_qual))
+
+                    ranked.sort(key=lambda x: x[2], reverse=True)
+                    top50 = ranked[:50]
+
+                    if not top50:
+                        await tg_post("sendMessage", {"chat_id": chat_id, "text": "⚠️ လက်ရှိ Leaderboard တွင် Qualified Invite ရှိသူ မရှိသေးပါ။"})
+                        return {"ok": True}
+
+                    paid_count = 0
+                    total_distributed = 0.0
+                    for idx, (uid, u, m_qual) in enumerate(top50, start=1):
+                        prize = get_rank_prize(idx)
+                        if prize > 0:
+                            new_bal = float(u.get("appBalance", 0)) + prize
+                            await client.patch(f"{base}/{uid}.json", json={
+                                "appBalance": new_bal,
+                                "monthlyQualified": 0
+                            })
+                            total_distributed += prize
+                            paid_count += 1
+                            try:
+                                await tg_post("sendMessage", {
+                                    "chat_id": int(uid),
+                                    "text": (
+                                        f"🏆 <b>Monthly Leaderboard Reward!</b>\n"
+                                        f"Congratulations! You finished <b>Rank #{idx}</b> with <b>{m_qual}</b> qualified invites.\n"
+                                        f"💰 Reward Credited: <b>+{prize:.2f} TT</b> added to your App Balance!"
+                                    ),
+                                    "parse_mode": "HTML"
+                                })
+                                await asyncio.sleep(0.05)
+                            except Exception:
+                                pass
+
+                    # Reset remaining users' monthlyQualified
+                    for uid, u in users_data.items():
+                        if isinstance(u, dict) and int(u.get("monthlyQualified", 0)) > 0:
+                            await client.patch(f"{base}/{uid}.json", json={"monthlyQualified": 0})
+
+                await tg_post("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": (
+                        f"✅ <b>Monthly Leaderboard Payout Complete!</b>\n"
+                        f"🏆 Winners Paid: <b>{paid_count}</b> (Ranks 1–50)\n"
+                        f"💰 Total Distributed: <b>{total_distributed:,.2f} TT</b>\n"
+                        f"🔄 Monthly counter has been reset for the new month."
                     ),
                     "parse_mode": "HTML"
                 })
@@ -431,9 +532,12 @@ async def telegram_webhook(req: Request):
                         u_res = await client.get(f"{base}/{user_id}.json")
                         if u_res.json() is None:
                             new_user = {
+                                "firstName": first_name,
+                                "username": user.get("username", ""),
                                 "appBalance": 0,
                                 "invited": 0,
                                 "qualified": 0,
+                                "monthlyQualified": 0,
                                 "refEarned": 0,
                                 "referredBy": ref_id if ref_id != user_id else ""
                             }
@@ -448,7 +552,7 @@ async def telegram_webhook(req: Request):
                                     "text": (
                                         f"👥 <b>New Referral Joined!</b>\n"
                                         f"<b>{first_name}</b> joined via your link. Once they verify (0.1 TON) AND hold at least <b>8 TT (Lv.2)</b>, "
-                                        f"you earn <b>5%</b> of all their mining claims!"
+                                        f"they count toward your Monthly Leaderboard (1,000 TT Pool) & you earn <b>5%</b> of their mining claims!"
                                     ),
                                     "parse_mode": "HTML"
                                 })
@@ -462,7 +566,7 @@ async def telegram_webhook(req: Request):
                     f"⚡ <b>Welcome to TITAN (TT) Web3 Mining, {first_name}!</b>\n\n"
                     "🪙 <b>Coin:</b> Titan (TT) on TON ($1.171)\n"
                     "⛏️ <b>Mining Rate:</b> 10 TT/day (0.42 TT/hr) • Up to 500 TT/day at Lv.100\n"
-                    "👥 <b>Referral Reward:</b> 5% commission from friends holding Lv.2+ (8+ TT)\n\n"
+                    "🏆 <b>Monthly Leaderboard:</b> Top 50 inviters share <b>1,000 TT</b> every month!\n\n"
                     "Tap below to launch your mining rig:"
                 ),
                 "parse_mode": "HTML",
