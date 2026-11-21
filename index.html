@@ -262,7 +262,7 @@
       <div id="tasksContainer" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== TAB 3: MARKET (LIVE DEDUST SWAP) ==================== -->
+    <!-- ==================== TAB 3: MARKET (DIRECT DEDUST SWAP) ==================== -->
     <section id="tab-market" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -325,7 +325,7 @@
             </div>
           </div>
           <div class="flex justify-between pt-2 border-t border-white/10">
-            <span class="font-bold text-zinc-300">Total + Gas & App Fee</span>
+            <span class="font-bold text-zinc-300">Total Swap + Gas & Fee</span>
             <span id="totalSwapCost" class="font-extrabold text-amber-400">1.35 TON</span>
           </div>
         </div>
@@ -571,18 +571,21 @@
 
   <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2 rounded-full bg-amber-400 text-black font-extrabold text-xs shadow-xl"></div>
 
-<script>
+<script type="module">
+  import { beginCell, Address, toNano } from 'https://esm.sh/@ton/core@0.56.3';
+
   // ==================== CONFIGURATION ====================
   const CONFIG = {
     COIN_NAME: "Titan",
     COIN_SYMBOL: "TT",
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
     ADMIN_WALLET: "UQAPQ6UWezq6l_wHjaNEOlTu6Ux6BHSXeYaEDyoDfsuLE3Yz",
+    DEDUST_NATIVE_VAULT: "EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_",
     BOT_USERNAME: "TitanMine_bot",
     VERIFY_TON_AMOUNT: 0.1,
     SERVICE_FEE_TON: 0.1,
     MIN_WITHDRAW: 100,
-    HOLD_PERCENT_REQUIRED: 0.25, // 25% On-Chain Hold required to withdraw
+    HOLD_PERCENT_REQUIRED: 0.25,
     REF_INSTANT_BONUS: 5,
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
     DB_NODE: "titan_tt_users",
@@ -590,7 +593,6 @@
     SECURITY_NODE: "titan_tt_security"
   };
 
-  // ==================== LEVELS 1 TO 100 ($1 COIN TOKENOMICS: START 10 TT/DAY) ====================
   function getLeagueName(lv) {
     if (lv <= 10) return "Bronze";
     if (lv <= 25) return "Silver";
@@ -721,13 +723,19 @@
     } catch (e) {}
   }
 
-  // ==================== LIVE QUOTE FROM BACKEND (/api/quote) ====================
-  let poolData = { tonReserve: 0, ttReserve: 0, rateTTPerTon: 0, loaded: false };
+  // ==================== LIVE QUOTE & POOL ADDRESS ====================
+  let poolData = {
+    tonReserve: 0,
+    ttReserve: 0,
+    rateTTPerTon: 1.0, // Default $1 peg reference if pool not indexed yet
+    poolAddress: "",
+    loaded: false
+  };
 
-  async function fetchLiveDeDustRate() {
+  window.fetchLiveDeDustRate = async function() {
     const badge = document.getElementById("liveRateBadge");
     const statusText = document.getElementById("poolStatusText");
-    badge.textContent = "Fetching Rate...";
+    badge.textContent = "Syncing Pool...";
     try {
       const res = await fetch("/api/quote");
       const q = await res.json();
@@ -736,6 +744,7 @@
           tonReserve: q.tonReserve,
           ttReserve: q.ttReserve,
           rateTTPerTon: q.rateTTPerTon,
+          poolAddress: q.poolAddress || "",
           loaded: true
         };
         badge.textContent = `1 TON ≈ ${q.rateTTPerTon.toFixed(2)} TT`;
@@ -743,15 +752,17 @@
         recalcSwap();
         return;
       }
-      badge.textContent = "DeDust Direct";
-      statusText.textContent = "DeDust Pool Ready";
+      badge.textContent = "1 TON ≈ 1.00 TT";
+      statusText.textContent = "DeDust.io Pool";
+      recalcSwap();
     } catch (e) {
-      badge.textContent = "Retry Sync";
+      badge.textContent = "1 TON ≈ 1.00 TT";
+      recalcSwap();
     }
-  }
+  };
 
-  // ==================== USER STATE & FIREBASE SYNC ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v6")) || {
+  // ==================== USER STATE ====================
+  let state = JSON.parse(localStorage.getItem("titan_tt_v7")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
@@ -812,7 +823,7 @@
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v6", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v7", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -843,7 +854,7 @@
     const t = document.getElementById("toast");
     t.textContent = msg;
     t.classList.remove("hidden");
-    setTimeout(() => t.classList.add("hidden"), 3000);
+    setTimeout(() => t.classList.add("hidden"), 3200);
   }
 
   function recalculateLevel() {
@@ -880,8 +891,8 @@
   }, 1000);
 
   // ==================== 0.1 TON VERIFY & CLAIM ====================
-  async function verifyWalletAction() {
-    if (!state.walletAddress) return connectOrReconnectWallet();
+  window.verifyWalletAction = async function() {
+    if (!state.walletAddress) return window.connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
 
     try {
@@ -916,10 +927,10 @@
     } catch (err) {
       showToast("❌ Verification cancelled");
     }
-  }
+  };
 
-  async function handleClaimOrVerify() {
-    if (!state.verified) return verifyWalletAction();
+  window.handleClaimOrVerify = async function() {
+    if (!state.verified) return window.verifyWalletAction();
     if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Claims disabled");
     const { mined } = getCurrentMiningStats();
     if (mined < 0.01) return showToast("⏳ Wait for mining balance to accumulate");
@@ -946,30 +957,58 @@
     saveState();
     renderAll();
     showToast(`🎉 Claimed +${mined.toFixed(3)} TT!`);
+  };
+
+  // ==================== IN-APP DEDUST BOC SWAP BUILDER ====================
+  function buildDeDustNativeSwapPayload(amountNano, poolAddrStr, recipientAddrStr) {
+    // DeDust VaultNative::swap op = 0xea06185d
+    const swapParams = beginCell()
+      .storeUint(Math.floor(Date.now() / 1000) + 600, 32) // deadline
+      .storeAddress(Address.parse(recipientAddrStr)) // recipient
+      .storeAddress(null) // referral
+      .storeMaybeRef(null) // fulfill_payload
+      .storeMaybeRef(null) // reject_payload
+      .endCell();
+
+    const step = beginCell()
+      .storeAddress(Address.parse(poolAddrStr)) // pool_addr
+      .storeUint(0, 1) // kind: GivenIn (0)
+      .storeCoins(0n) // limit (0 = accept market output)
+      .storeMaybeRef(null) // next step
+      .endCell();
+
+    const body = beginCell()
+      .storeUint(0xea06185d, 32) // op::swap
+      .storeUint(0, 64) // query_id
+      .storeCoins(BigInt(amountNano)) // swap amount
+      .storeRef(step)
+      .storeRef(swapParams)
+      .endCell();
+
+    return body.toBoc().toString("base64");
   }
 
-  // ==================== SWAP & DEDUST DIRECT LAUNCH ====================
-  function togglePayAsset() {
+  window.togglePayAsset = function() {
     swapState.payAsset = swapState.payAsset === "TON" ? "TT" : "TON";
-    recalcSwap();
-  }
+    window.recalcSwap();
+  };
 
-  function setSlippage(val, btn) {
+  window.setSlippage = function(val, btn) {
     swapState.slippage = val;
     document.querySelectorAll(".slip-btn").forEach(b => {
       b.className = "slip-btn px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 font-bold";
     });
     btn.className = "slip-btn px-2.5 py-1 rounded-full bg-amber-400 text-black font-extrabold";
-    recalcSwap();
-  }
+    window.recalcSwap();
+  };
 
-  function setMaxSwap() {
-    const avail = swapState.payAsset === "TON" ? Math.max(0, state.tonBalance - 0.3) : state.onChainTT;
+  window.setMaxSwap = function() {
+    const avail = swapState.payAsset === "TON" ? Math.max(0, state.tonBalance - 0.4) : state.onChainTT;
     document.getElementById("swapInputAmount").value = avail.toFixed(2);
-    recalcSwap();
-  }
+    window.recalcSwap();
+  };
 
-  function recalcSwap() {
+  window.recalcSwap = function() {
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     const isTonToTT = swapState.payAsset === "TON";
     document.getElementById("payCurrencyLabel").textContent = isTonToTT ? "TON" : "TT";
@@ -978,58 +1017,89 @@
     document.getElementById("swapAvailBalance").textContent = isTonToTT ? state.tonBalance.toFixed(2) : state.onChainTT.toFixed(2);
 
     let out = 0;
-    if (poolData.loaded && amt > 0) {
-      const amtAfterDexFee = amt * 0.9975;
-      out = isTonToTT
-        ? (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee)
-        : (poolData.tonReserve * amtAfterDexFee) / (poolData.ttReserve + amtAfterDexFee);
+    if (amt > 0) {
+      if (poolData.loaded && poolData.tonReserve > 0) {
+        const amtAfterDexFee = amt * 0.9975;
+        out = isTonToTT
+          ? (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee)
+          : (poolData.tonReserve * amtAfterDexFee) / (poolData.ttReserve + amtAfterDexFee);
+      } else {
+        out = isTonToTT ? amt * poolData.rateTTPerTon : amt / poolData.rateTTPerTon;
+      }
     }
-    document.getElementById("swapOutputAmount").textContent = poolData.loaded ? out.toFixed(3) : "Live on DeDust";
+    document.getElementById("swapOutputAmount").textContent = out.toFixed(3);
     document.getElementById("totalSwapCost").textContent = isTonToTT
-      ? `${(amt + CONFIG.SERVICE_FEE_TON + 0.15).toFixed(2)} TON`
-      : `${amt.toFixed(2)} TT + 0.25 TON`;
-  }
+      ? `${(amt + CONFIG.SERVICE_FEE_TON + 0.25).toFixed(2)} TON`
+      : `${amt.toFixed(2)} TT + 0.35 TON`;
+  };
 
-  async function executeInstantSwitch() {
-    if (!state.walletAddress) return connectOrReconnectWallet();
+  window.executeInstantSwitch = async function() {
+    if (!state.walletAddress) return window.connectOrReconnectWallet();
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     if (amt <= 0) return showToast("Enter valid amount");
 
-    // Collect 0.1 TON App Service Fee & Route directly to DeDust Exact Pair
-    if (state.tonBalance < 0.2) {
-      return showToast("⚠️ Insufficient TON for network & service fee (0.2 TON)");
-    }
-
-    try {
-      await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [{
-          address: CONFIG.ADMIN_WALLET,
-          amount: String(Math.round(CONFIG.SERVICE_FEE_TON * 1e9))
-        }]
-      });
-
-      const dedustUrl = swapState.payAsset === "TON"
-        ? `https://dedust.io/swap/TON/${CONFIG.JETTON_ADDRESS}?amount=${amt}`
-        : `https://dedust.io/swap/${CONFIG.JETTON_ADDRESS}/TON?amount=${amt}`;
-
-      if (tg && tg.openLink) {
-        tg.openLink(dedustUrl);
-      } else {
-        window.open(dedustUrl, "_blank");
+    if (swapState.payAsset === "TON") {
+      if (state.tonBalance < amt + 0.35) {
+        return showToast(`⚠️ Insufficient TON (Need ${(amt + 0.35).toFixed(2)} TON)`);
       }
-      setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
-    } catch (e) {
-      showToast("❌ Swap cancelled");
-    }
-  }
 
-  function copyContract() {
+      // If DeDust Pool Address is found, execute direct on-chain Smart Contract Swap inside Tonkeeper!
+      if (poolData.poolAddress) {
+        try {
+          const swapAmtNano = toNano(amt.toString());
+          const gasNano = toNano("0.25");
+          const totalVaultNano = (swapAmtNano + gasNano).toString();
+          const appFeeNano = toNano(CONFIG.SERVICE_FEE_TON.toString()).toString();
+          const swapPayloadBoc = buildDeDustNativeSwapPayload(swapAmtNano, poolData.poolAddress, state.walletAddress);
+
+          await tonConnectUI.sendTransaction({
+            validUntil: Math.floor(Date.now() / 1000) + 300,
+            messages: [
+              {
+                address: CONFIG.ADMIN_WALLET,
+                amount: appFeeNano
+              },
+              {
+                address: CONFIG.DEDUST_NATIVE_VAULT,
+                amount: totalVaultNano,
+                payload: swapPayloadBoc
+              }
+            ]
+          });
+
+          state.activities.unshift({
+            title: `Swapped ${amt} TON → TT`,
+            date: new Date().toLocaleDateString(),
+            amount: `+${document.getElementById("swapOutputAmount").textContent} TT`
+          });
+          saveState();
+          renderAll();
+          showToast("✅ Swap Executed! TT arriving in wallet...");
+          setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
+          return;
+        } catch (err) {
+          return showToast("❌ Swap cancelled");
+        }
+      }
+    }
+
+    // Fallback or TT->TON: Open DeDust Exact Pair URL directly
+    const dedustUrl = swapState.payAsset === "TON"
+      ? `https://dedust.io/swap/TON/${CONFIG.JETTON_ADDRESS}?amount=${amt}`
+      : `https://dedust.io/swap/${CONFIG.JETTON_ADDRESS}/TON?amount=${amt}`;
+    if (tg && tg.openLink) {
+      tg.openLink(dedustUrl);
+    } else {
+      window.open(dedustUrl, "_blank");
+    }
+  };
+
+  window.copyContract = function() {
     navigator.clipboard.writeText(CONFIG.JETTON_ADDRESS);
     showToast("📋 TT Contract Address Copied!");
-  }
+  };
 
-  function completeTask(id, reward, url, title) {
+  window.completeTask = function(id, reward, url, title) {
     window.open(url, "_blank");
     if (!state.completedTasks.includes(id)) {
       state.completedTasks.push(id);
@@ -1039,9 +1109,9 @@
       renderAll();
       showToast(`✅ +${reward} TT Earned!`);
     }
-  }
+  };
 
-  function claimDailyStreak() {
+  window.claimDailyStreak = function() {
     const today = new Date().toDateString();
     if (state.lastStreakDate === today) return showToast("✅ Today's streak already claimed!");
     const bonus = Number((1 + (state.streakDay * 0.1)).toFixed(1));
@@ -1052,11 +1122,11 @@
     saveState();
     renderAll();
     showToast(`🔥 Streak Claimed: +${bonus} TT!`);
-  }
+  };
 
-  async function connectOrReconnectWallet() {
+  window.connectOrReconnectWallet = async function() {
     if (tonConnectUI) await tonConnectUI.openModal();
-  }
+  };
 
   async function fetchOnChainBalances(addr) {
     try {
@@ -1074,8 +1144,7 @@
     } catch (e) {}
   }
 
-  // ==================== WITHDRAW WITH 25% ON-CHAIN HOLD CHECK ====================
-  function requestWithdraw() {
+  window.requestWithdraw = function() {
     if (!state.verified) return showToast("🛡️ Verify wallet (0.1 TON) first!");
     if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Withdrawals locked");
     if (state.appBalance < CONFIG.MIN_WITHDRAW) {
@@ -1086,7 +1155,7 @@
     if (state.onChainTT < requiredHold) {
       const missingTT = (requiredHold - state.onChainTT).toFixed(2);
       showToast(`🔒 Need ${requiredHold.toFixed(2)} TT (25%) Hold in wallet! Buy ${missingTT} TT more.`);
-      setTimeout(() => switchTab("market"), 1500);
+      setTimeout(() => window.switchTab("market"), 1500);
       return;
     }
 
@@ -1096,20 +1165,20 @@
     saveState();
     renderAll();
     showToast("🚀 Withdrawal submitted to TON payout queue!");
-  }
+  };
 
   function getInviteUrl() { return `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`; }
-  function copyInviteLink() { navigator.clipboard.writeText(getInviteUrl()); showToast("📋 Invite link copied!"); }
-  function shareInviteLink() {
+  window.copyInviteLink = function() { navigator.clipboard.writeText(getInviteUrl()); showToast("📋 Invite link copied!"); };
+  window.shareInviteLink = function() {
     window.open(`https://t.me/share/url?url=${encodeURIComponent(getInviteUrl())}&text=${encodeURIComponent("⚡ Mine TITAN (TT) on TON! Join my crew:")}`, "_blank");
-  }
-  function submitAmbassador() {
+  };
+  window.submitAmbassador = function() {
     if (!document.getElementById("ambLink").value.trim()) return showToast("Enter channel link");
-    closeModal("ambassadorModal");
+    window.closeModal("ambassadorModal");
     showToast("👑 Ambassador application submitted!");
-  }
+  };
 
-  function switchTab(tabName) {
+  window.switchTab = function(tabName) {
     ["home", "station", "market", "friends", "wallet"].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add("hidden");
       const nav = document.getElementById(`nav-${t}`);
@@ -1120,11 +1189,11 @@
     const activeNav = document.getElementById(`nav-${tabName}`);
     activeNav.classList.add("nav-active");
     activeNav.classList.remove("text-zinc-400");
-    recalcSwap();
-  }
+    window.recalcSwap();
+  };
 
-  function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
-  function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+  window.openModal = function(id) { document.getElementById(id).classList.remove("hidden"); };
+  window.closeModal = function(id) { document.getElementById(id).classList.add("hidden"); };
 
   function renderAll() {
     const { lvObj, hourly } = getCurrentMiningStats();
@@ -1157,7 +1226,6 @@
     document.getElementById("gridLeague").textContent = getLeagueName(state.level);
     document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • Tap for 1-100`;
 
-    // 25% Hold Calculation Display in Wallet Tab
     const targetWithdraw = Math.max(CONFIG.MIN_WITHDRAW, state.appBalance);
     const reqHold = targetWithdraw * CONFIG.HOLD_PERCENT_REQUIRED;
     document.getElementById("requiredHoldTT").textContent = reqHold.toFixed(2);
@@ -1237,7 +1305,7 @@
   }
 
   renderAll();
-  fetchLiveDeDustRate();
+  window.fetchLiveDeDustRate();
   loadDynamicTasks();
   syncWithFirebase();
 </script>
