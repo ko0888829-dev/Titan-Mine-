@@ -203,7 +203,7 @@
         </div>
       </div>
 
-      <!-- Next Level Card (STRICT AND LOGIC: BOTH HOLD TT AND VERIFIED FRIENDS REQUIRED) -->
+      <!-- Next Level Card (AND LOGIC) -->
       <div onclick="openModal('levelsModal')" class="gold-card rounded-3xl p-4 space-y-3 cursor-pointer">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -214,7 +214,7 @@
             <div>
               <h3 class="font-extrabold text-sm text-white">Next Level: <span id="nextLvTitle">2</span> <span class="text-xs text-zinc-400">(Max 100)</span></h3>
               <p class="text-xs font-semibold text-amber-400">Unlocks <span id="nextLvRate">12</span> TT/day (<span id="nextLvHourly">0.50</span>/hr)</p>
-              <p class="text-[11px] text-zinc-300 font-semibold">Requires BOTH: Hold TT <span class="text-amber-400">AND</span> Verified Friends</p>
+              <p class="text-[11px] text-zinc-300 font-semibold">Requires BOTH: Hold TT <span class="text-amber-400">AND</span> Qualified Friends</p>
             </div>
           </div>
           <span class="text-zinc-400">›</span>
@@ -227,7 +227,7 @@
           </div>
           <div class="text-center text-[10px] font-extrabold text-amber-400 tracking-widest">+ AND +</div>
           <div class="bg-white/5 rounded-xl p-2.5 flex justify-between items-center text-xs">
-            <span class="text-zinc-300">Req 2 • Qualified Friends (0.1 TON)</span>
+            <span class="text-zinc-300">Req 2 • Qualified Friends (0.1 TON + 8 TT)</span>
             <span class="font-bold text-amber-400"><span id="pathBFriends">0</span> / <span id="pathBReq">3</span></span>
           </div>
         </div>
@@ -342,7 +342,7 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 4: FRIENDS ==================== -->
+    <!-- ==================== TAB 4: FRIENDS (5% COMMISSION ONLY + 8 TT LV.2 HOLD RULE) ==================== -->
     <section id="tab-friends" class="hidden space-y-4">
       <div class="gold-card-highlight rounded-3xl p-5">
         <h2 class="text-xl font-extrabold text-white">Invite & Earn</h2>
@@ -350,8 +350,8 @@
         <div class="flex items-center gap-3 mt-4">
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
-            <b>from your active friends' mining</b><br>
-            +5 TT instant bonus per 0.1 TON verified friend!
+            <b>from your active friends' mining claims</b><br>
+            Friend must verify (0.1 TON) & hold <b>8+ TT (Lv.2)</b>
           </div>
         </div>
       </div>
@@ -367,7 +367,7 @@
         </div>
         <div class="gold-card rounded-2xl p-3 text-center">
           <div class="text-[11px] text-zinc-400">Earned</div>
-          <div id="refEarnedCount" class="text-xl font-extrabold text-amber-400 mt-0.5">0</div>
+          <div id="refEarnedCount" class="text-xl font-extrabold text-amber-400 mt-0.5">0.00</div>
         </div>
       </div>
 
@@ -380,7 +380,9 @@
           <button onclick="shareInviteLink()" class="py-3 rounded-xl gold-btn text-xs">✈️ Invite friends</button>
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
-        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.1 TON</b> wallet verification. Both Hold TT <b>AND</b> Qualified Friends are required to unlock higher levels.</p>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">
+          To count as a <b>Qualified Friend</b> and unlock your levels, your invited friend must complete the <b>0.1 TON</b> verification <b>AND</b> hold at least <b>8 TT (Wallet Hold Lv.2)</b> on-chain. You earn <b>5%</b> commission every time they claim mined TT.
+        </p>
       </div>
 
       <div onclick="openModal('ambassadorModal')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
@@ -576,7 +578,7 @@
       <div class="flex justify-between items-center shrink-0">
         <div>
           <h3 class="text-lg font-extrabold text-white">Mining Levels (1 – 100)</h3>
-          <p class="text-xs text-zinc-400">Requires <b class="text-amber-400">BOTH</b> On-Chain Hold <b class="text-amber-400">AND</b> Verified Friends</p>
+          <p class="text-xs text-zinc-400">Requires <b class="text-amber-400">BOTH</b> On-Chain Hold <b class="text-amber-400">AND</b> Qualified Friends (8+ TT Hold)</p>
         </div>
         <button onclick="closeModal('levelsModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
@@ -607,7 +609,7 @@
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
         <div class="font-bold text-amber-400">ℹ️ Welcome to TITAN (TT) • $1 Pegged Mining!</div>
-        <p class="text-zinc-300">Start mining at 10 TT/day (0.42 TT/hr). Hold TT AND invite verified friends to climb to Level 100.</p>
+        <p class="text-zinc-300">Start mining at 10 TT/day (0.42 TT/hr). Hold TT AND invite friends holding Lv.2+ (8+ TT) to climb to Level 100.</p>
       </div>
     </div>
   </div>
@@ -624,12 +626,14 @@
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
     ADMIN_WALLET: "UQAPQ6UWezq6l_wHjaNEOlTu6Ux6BHSXeYaEDyoDfsuLE3Yz",
     DEDUST_NATIVE_VAULT: "EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_",
+    DEDUST_FACTORY: "EQBfBWT7X2BHg9tXAxzhz2aKiNTU1tpt5NsiK0uSDW_YAJ67",
     BOT_USERNAME: "TitanMine_bot",
     VERIFY_TON_AMOUNT: 0.1,
     SERVICE_FEE_TON: 0.1,
     MIN_WITHDRAW: 100,
     HOLD_PERCENT_REQUIRED: 0.25,
-    REF_INSTANT_BONUS: 5,
+    FRIEND_MIN_HOLD_LV2: 8, // Invited friend must hold >= 8 TT (Lv.2) to become Qualified
+    REF_COMMISSION_RATE: 0.05, // 5% commission from qualified friends' mining claims
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
     DB_NODE: "titan_tt_users",
     TASKS_NODE: "titan_tt_tasks",
@@ -649,7 +653,7 @@
     const lv = i + 1;
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 10, holdReq: 0, refReq: 0 };
     const daily = Number((10 + Math.pow((lv - 1) / 99, 1.35) * 490).toFixed(1));
-    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8);
+    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8); // Lv.2 = 8 TT
     const refReq = Math.max(1, Math.round((lv - 1) * 2.5));
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
@@ -659,14 +663,41 @@
     { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check live TT/TON liquidity pool", reward: 1, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
   ];
 
-  // ==================== TON TEXT COMMENT (MEMO) BOC BUILDER ====================
+  // ==================== TON BOC BUILDERS ====================
   function buildMemoPayload(memoText) {
     return beginCell()
-      .storeUint(0, 32) // op = 0 (text comment)
+      .storeUint(0, 32)
       .storeStringTail(memoText)
       .endCell()
       .toBoc()
       .toString("base64");
+  }
+
+  function buildDeDustNativeSwapPayload(amountNano, poolAddrStr, recipientAddrStr) {
+    const swapParams = beginCell()
+      .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
+      .storeAddress(Address.parse(recipientAddrStr))
+      .storeAddress(null)
+      .storeMaybeRef(null)
+      .storeMaybeRef(null)
+      .endCell();
+
+    const step = beginCell()
+      .storeAddress(Address.parse(poolAddrStr))
+      .storeUint(0, 1) // GivenIn
+      .storeCoins(0n) // Market output
+      .storeMaybeRef(null)
+      .endCell();
+
+    const body = beginCell()
+      .storeUint(0xea06185d, 32) // op::swap
+      .storeUint(0, 64)
+      .storeCoins(BigInt(amountNano))
+      .storeRef(step)
+      .storeRef(swapParams)
+      .endCell();
+
+    return body.toBoc().toString("base64");
   }
 
   // ==================== DEVICE FINGERPRINT & IP ANTI-CHEAT ====================
@@ -776,50 +807,85 @@
     } catch (e) {}
   }
 
-  // ==================== LIVE QUOTE & DEDUST POOL ADDRESS ====================
+  // ==================== RESOLVE DEDUST POOL ADDRESS (BACKEND + TONAPI FACTORY) ====================
   let poolData = {
     tonReserve: 0,
     ttReserve: 0,
     rateTTPerTon: 1.0,
-    poolAddress: "",
+    poolAddress: localStorage.getItem("titan_dedust_pool_addr") || "",
     loaded: false
   };
+
+  async function computePoolAddressViaFactory() {
+    try {
+      // DeDust Asset::native() = 0000 (4 bits), Asset::jetton(wc=0, hash) = 0001 + 8bit wc + 256bit hash
+      const ttAddr = Address.parse(CONFIG.JETTON_ADDRESS);
+      const assetNative = beginCell().storeUint(0, 4).endCell();
+      const assetJetton = beginCell().storeUint(1, 4).storeInt(ttAddr.workChain, 8).storeBuffer(ttAddr.hash).endCell();
+
+      const res = await fetch(`https://tonapi.io/v2/blockchain/accounts/${CONFIG.DEDUST_FACTORY}/methods/get_pool_address`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          args: [
+            { type: "int", value: "0" }, // Volatile pool type = 0
+            { type: "slice", value: assetNative.toBoc().toString("hex") },
+            { type: "slice", value: assetJetton.toBoc().toString("hex") }
+          ]
+        })
+      });
+      const json = await res.json();
+      if (json && json.decoded && json.decoded.pool_address) {
+        return json.decoded.pool_address;
+      }
+    } catch (e) {}
+    return "";
+  }
 
   window.fetchLiveDeDustRate = async function() {
     const badge = document.getElementById("liveRateBadge");
     const statusText = document.getElementById("poolStatusText");
     badge.textContent = "Syncing Pool...";
+
     try {
       const res = await fetch("/api/quote");
       const q = await res.json();
       if (q && q.ok && q.poolAddress) {
-        poolData = {
-          tonReserve: q.tonReserve || 0,
-          ttReserve: q.ttReserve || 0,
-          rateTTPerTon: q.rateTTPerTon || 1.0,
-          poolAddress: q.poolAddress,
-          loaded: true
-        };
-        badge.textContent = `1 TON ≈ ${poolData.rateTTPerTon.toFixed(2)} TT`;
-        statusText.textContent = `DeDust Pool Connected ✓`;
-        window.recalcSwap();
-        return;
+        poolData.poolAddress = q.poolAddress;
+        poolData.tonReserve = q.tonReserve || 0;
+        poolData.ttReserve = q.ttReserve || 0;
+        poolData.rateTTPerTon = q.rateTTPerTon || 1.0;
+        poolData.loaded = q.tonReserve > 0;
+        localStorage.setItem("titan_dedust_pool_addr", q.poolAddress);
       }
-      badge.textContent = "1 TON ≈ 1.00 TT";
-      window.recalcSwap();
-    } catch (e) {
-      badge.textContent = "1 TON ≈ 1.00 TT";
-      window.recalcSwap();
+    } catch (e) {}
+
+    if (!poolData.poolAddress) {
+      const computed = await computePoolAddressViaFactory();
+      if (computed) {
+        poolData.poolAddress = computed;
+        localStorage.setItem("titan_dedust_pool_addr", computed);
+      }
     }
+
+    if (poolData.poolAddress) {
+      badge.textContent = `1 TON ≈ ${poolData.rateTTPerTon.toFixed(2)} TT`;
+      statusText.textContent = "DeDust Pool Connected ✓";
+    } else {
+      badge.textContent = "1 TON ≈ 1.00 TT";
+      statusText.textContent = "DeDust Smart Contract";
+    }
+    window.recalcSwap();
   };
 
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v8")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v9")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
     walletAddress: "",
     verified: false,
+    qualifiedCredited: false, // Becomes true only when verified AND onChainTT >= 8 TT
     banned: false,
     isMultiFlagged: false,
     deviceId: "",
@@ -869,18 +935,47 @@
         }
       }
       await runAntiCheatSecurity(tgUser.id);
+      await checkAndCreditQualifiedReferral();
       saveState();
       renderAll();
     } catch (e) {}
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v8", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v9", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
         body: JSON.stringify(state)
       }).catch(() => {});
+    }
+  }
+
+  // ==================== QUALIFIED REFERRAL CHECK (VERIFIED + HOLD >= 8 TT LV.2) ====================
+  async function checkAndCreditQualifiedReferral() {
+    if (
+      state.verified &&
+      state.onChainTT >= CONFIG.FRIEND_MIN_HOLD_LV2 &&
+      !state.qualifiedCredited &&
+      state.referredBy &&
+      CONFIG.FIREBASE_URL &&
+      !state.isMultiFlagged
+    ) {
+      try {
+        const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
+        const rRes = await fetch(refUrl);
+        const rData = await rRes.json();
+        if (rData) {
+          await fetch(refUrl, {
+            method: "PATCH",
+            body: JSON.stringify({
+              qualified: (rData.qualified || 0) + 1
+            })
+          });
+          state.qualifiedCredited = true;
+          saveState();
+        }
+      } catch (e) {}
     }
   }
 
@@ -909,7 +1004,6 @@
     setTimeout(() => t.classList.add("hidden"), 3200);
   }
 
-  // STRICT AND LOGIC: BOTH HOLD TT AND VERIFIED FRIENDS REQUIRED TO LEVEL UP
   function recalculateLevel() {
     let highest = 1;
     for (const l of LEVELS) {
@@ -943,7 +1037,7 @@
     }
   }, 1000);
 
-  // ==================== 0.1 TON VERIFY WITH MEMO & CLAIM ====================
+  // ==================== 0.1 TON VERIFY WITH MEMO & CLAIM (5% REF COMMISSION ONLY) ====================
   window.verifyWalletAction = async function() {
     if (!state.walletAddress) return window.connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
@@ -960,22 +1054,7 @@
       });
       state.verified = true;
       state.activities.unshift({ title: "Wallet Verified (0.1 TON • Memo)", date: new Date().toLocaleDateString(), amount: "Verified" });
-
-      if (state.referredBy && CONFIG.FIREBASE_URL && !state.isMultiFlagged) {
-        const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
-        const rRes = await fetch(refUrl);
-        const rData = await rRes.json();
-        if (rData) {
-          await fetch(refUrl, {
-            method: "PATCH",
-            body: JSON.stringify({
-              qualified: (rData.qualified || 0) + 1,
-              appBalance: (rData.appBalance || 0) + CONFIG.REF_INSTANT_BONUS,
-              refEarned: (rData.refEarned || 0) + CONFIG.REF_INSTANT_BONUS
-            })
-          });
-        }
-      }
+      await checkAndCreditQualifiedReferral();
       saveState();
       renderAll();
       showToast("🛡️ Wallet Verified (0.1 TON)!");
@@ -994,8 +1073,15 @@
     state.cycleStart = Date.now();
     state.activities.unshift({ title: "Mining Cycle Claim", date: new Date().toLocaleDateString(), amount: `+${mined.toFixed(3)} TT` });
 
-    if (state.referredBy && CONFIG.FIREBASE_URL && !state.isMultiFlagged) {
-      const comm = mined * 0.05;
+    // 5% Commission to Referrer ONLY if this user is Qualified (Verified + Holds >= 8 TT Lv.2)
+    if (
+      state.qualifiedCredited &&
+      state.onChainTT >= CONFIG.FRIEND_MIN_HOLD_LV2 &&
+      state.referredBy &&
+      CONFIG.FIREBASE_URL &&
+      !state.isMultiFlagged
+    ) {
+      const comm = mined * CONFIG.REF_COMMISSION_RATE;
       const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
       const rRes = await fetch(refUrl);
       const rData = await rRes.json();
@@ -1015,62 +1101,6 @@
   };
 
   // ==================== DIRECT ON-CHAIN SMART CONTRACT SWAP (NO REDIRECT) ====================
-  function buildDeDustNativeSwapPayload(amountNano, poolAddrStr, recipientAddrStr) {
-    const swapParams = beginCell()
-      .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
-      .storeAddress(Address.parse(recipientAddrStr))
-      .storeAddress(null)
-      .storeMaybeRef(null)
-      .storeMaybeRef(null)
-      .endCell();
-
-    const step = beginCell()
-      .storeAddress(Address.parse(poolAddrStr))
-      .storeUint(0, 1) // GivenIn
-      .storeCoins(0n) // Market output
-      .storeMaybeRef(null)
-      .endCell();
-
-    const body = beginCell()
-      .storeUint(0xea06185d, 32) // op::swap
-      .storeUint(0, 64)
-      .storeCoins(BigInt(amountNano))
-      .storeRef(step)
-      .storeRef(swapParams)
-      .endCell();
-
-    return body.toBoc().toString("base64");
-  }
-
-  function buildJettonTransferSwapPayload(ttAmountNano, poolAddrStr, senderAddrStr) {
-    // DeDust Jetton Vault Swap forward payload (op = 0xe3a0d482)
-    const swapParams = beginCell()
-      .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
-      .storeAddress(Address.parse(senderAddrStr))
-      .storeAddress(null)
-      .storeMaybeRef(null)
-      .storeMaybeRef(null)
-      .endCell();
-
-    const step = beginCell()
-      .storeAddress(Address.parse(poolAddrStr))
-      .storeUint(0, 1)
-      .storeCoins(0n)
-      .storeMaybeRef(null)
-      .endCell();
-
-    const forwardPayload = beginCell()
-      .storeUint(0xe3a0d482, 32) // DeDust Jetton swap op
-      .storeRef(step)
-      .storeRef(swapParams)
-      .endCell();
-
-    // Standard TEP-74 Jetton Transfer (op = 0xf8a7ea5)
-    // Destination: DeDust Jetton Vault for TT
-    const DEDUST_TT_VAULT = "EQD6_P263333333333333333333333333333333333333333";
-    return forwardPayload;
-  }
-
   window.togglePayAsset = function() {
     swapState.payAsset = swapState.payAsset === "TON" ? "TT" : "TON";
     window.recalcSwap();
@@ -1125,7 +1155,7 @@
       await window.fetchLiveDeDustRate();
     }
     if (!poolData.poolAddress) {
-      return showToast("⚠️ Syncing DeDust Pool Address... Tap again in 2s");
+      return showToast("⚠️ Pool address unavailable. Check DeDust pool liquidity.");
     }
 
     if (swapState.payAsset === "TON") {
@@ -1163,40 +1193,82 @@
         });
         saveState();
         renderAll();
-        showToast("✅ Direct Swap Sent! TT arriving in wallet...");
+        showToast("✅ Direct Switch Sent! TT arriving in wallet...");
         setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
       } catch (err) {
-        showToast("❌ Swap cancelled");
+        showToast("❌ Switch cancelled");
       }
     } else {
-      // Sell TT -> TON via Jetton Wallet Transfer with DeDust Swap Forward Payload
+      // Sell TT -> TON directly via Jetton Wallet Transfer (TEP-74 op=0xf8a7ea5) with DeDust Swap Forward Payload
       try {
         const jRes = await fetch(`https://tonapi.io/v2/accounts/${state.walletAddress}/jettons/${CONFIG.JETTON_ADDRESS}`);
         const jData = await jRes.json();
         const userJettonWallet = jData?.wallet_address?.address;
         if (!userJettonWallet) return showToast("⚠️ TT Jetton wallet not found");
 
-        // Resolve DeDust Jetton Vault address for TT
-        const vRes = await fetch(`https://api.dedust.io/v2/jettons/${CONFIG.JETTON_ADDRESS}/metadata`);
+        // Resolve DeDust TT Jetton Vault from pool assets
+        const mRes = await fetch(`https://tonapi.io/v2/blockchain/accounts/${poolData.poolAddress}/methods/get_assets`);
+        const mJson = await mRes.json();
+        const DEDUST_TT_VAULT = mJson?.decoded?.asset1?.address || "";
+
+        const swapParams = beginCell()
+          .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
+          .storeAddress(Address.parse(state.walletAddress))
+          .storeAddress(null)
+          .storeMaybeRef(null)
+          .storeMaybeRef(null)
+          .endCell();
+
+        const step = beginCell()
+          .storeAddress(Address.parse(poolData.poolAddress))
+          .storeUint(0, 1)
+          .storeCoins(0n)
+          .storeMaybeRef(null)
+          .endCell();
+
+        const forwardPayload = beginCell()
+          .storeUint(0xe3a0d482, 32) // DeDust Jetton Vault Swap op
+          .storeRef(step)
+          .storeRef(swapParams)
+          .endCell();
+
         const ttNano = toNano(amt.toString());
+        const targetVault = DEDUST_TT_VAULT ? Address.parse(DEDUST_TT_VAULT) : Address.parse(CONFIG.DEDUST_NATIVE_VAULT);
+        const jettonTransferBody = beginCell()
+          .storeUint(0xf8a7ea5, 32) // TEP-74 transfer
+          .storeUint(0, 64)
+          .storeCoins(ttNano)
+          .storeAddress(targetVault)
+          .storeAddress(Address.parse(state.walletAddress))
+          .storeMaybeRef(null)
+          .storeCoins(toNano("0.22"))
+          .storeMaybeRef(forwardPayload)
+          .endCell()
+          .toBoc()
+          .toString("base64");
+
         const appFeeNano = toNano(CONFIG.SERVICE_FEE_TON.toString()).toString();
         const feeMemoBoc = buildMemoPayload(`TITAN_SELL_FEE:${tgUser.id}`);
 
-        // Execute Jetton Swap directly through DeDust Jetton Vault
-        const vaultLookup = await fetch(`https://tonapi.io/v2/blockchain/accounts/${poolData.poolAddress}/methods/get_assets`);
-        const vaultJson = await vaultLookup.json();
-        // Send fee + trigger direct Jetton swap
         await tonConnectUI.sendTransaction({
           validUntil: Math.floor(Date.now() / 1000) + 300,
-          messages: [{
-            address: CONFIG.ADMIN_WALLET,
-            amount: appFeeNano,
-            payload: feeMemoBoc
-          }]
+          messages: [
+            { address: CONFIG.ADMIN_WALLET, amount: appFeeNano, payload: feeMemoBoc },
+            { address: userJettonWallet, amount: toNano("0.28").toString(), payload: jettonTransferBody }
+          ]
         });
-        showToast("✅ Sell order initialized!");
+
+        state.activities.unshift({
+          title: `Instant Switch ${amt} TT → TON`,
+          date: new Date().toLocaleDateString(),
+          amount: `+${document.getElementById("swapOutputAmount").textContent} TON`
+        });
+        saveState();
+        renderAll();
+        showToast("✅ Direct Sell Sent! TON arriving in wallet...");
+        setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
       } catch (e) {
-        showToast("❌ Sell cancelled");
+        showToast("❌ Switch cancelled");
       }
     }
   };
@@ -1246,6 +1318,7 @@
       if (jData.balance) state.onChainTT = Number(jData.balance) / 1e9;
 
       recalculateLevel();
+      await checkAndCreditQualifiedReferral();
       saveState();
       renderAll();
     } catch (e) {}
@@ -1269,7 +1342,6 @@
   };
 
   window.setMaxWithdrawInput = function() {
-    // Max withdrawable given user's current 25% on-chain hold
     const maxByHold = state.onChainTT / CONFIG.HOLD_PERCENT_REQUIRED;
     const maxAllowed = Math.min(state.appBalance, maxByHold);
     document.getElementById("wdCustomAmount").value = Math.floor(maxAllowed);
@@ -1450,7 +1522,7 @@
       <div class="p-3 rounded-2xl border ${l.lv === state.level ? 'gold-card-highlight' : 'bg-white/5 border-white/10'} flex justify-between items-center text-xs">
         <div>
           <div class="font-extrabold text-white">Lv.${l.lv} • ${l.name}</div>
-          <div class="text-zinc-400">Hold ${l.holdReq.toLocaleString()} TT <b class="text-amber-400">AND</b> ${l.refReq} Verified Friends</div>
+          <div class="text-zinc-400">Hold ${l.holdReq.toLocaleString()} TT <b class="text-amber-400">AND</b> ${l.refReq} Qualified Friends (8+ TT)</div>
         </div>
         <div class="text-right">
           <div class="font-extrabold text-amber-400">${l.daily} TT/d</div>
