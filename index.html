@@ -342,7 +342,7 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 4: FRIENDS & MONTHLY TOP 50 LEADERBOARD ==================== -->
+    <!-- ==================== TAB 4: FRIENDS, INVITED CREW & MONTHLY TOP 50 ==================== -->
     <section id="tab-friends" class="hidden space-y-4">
       <div class="gold-card-highlight rounded-3xl p-5">
         <div class="flex items-center justify-between">
@@ -360,8 +360,8 @@
       </div>
 
       <div class="grid grid-cols-3 gap-2.5">
-        <div class="gold-card rounded-2xl p-3 text-center">
-          <div class="text-[11px] text-zinc-400">Invited</div>
+        <div onclick="document.getElementById('invitedCrewSection').scrollIntoView({behavior:'smooth'})" class="gold-card rounded-2xl p-3 text-center cursor-pointer">
+          <div class="text-[11px] text-zinc-400">Invited ▾</div>
           <div id="refInvitedCount" class="text-xl font-extrabold text-white mt-0.5">0</div>
         </div>
         <div class="gold-card rounded-2xl p-3 text-center">
@@ -389,6 +389,20 @@
         </p>
       </div>
 
+      <!-- MY INVITED FRIENDS LIST (SHOWS WHO USER INVITED + QUALIFIED STATUS) -->
+      <div id="invitedCrewSection" class="gold-card rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-extrabold text-base text-white">👥 My Invited Friends</h3>
+            <p class="text-[11px] text-zinc-400">Track verification & 8+ TT Lv.2 hold status</p>
+          </div>
+          <button onclick="loadMyInvitedFriends()" class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-bold text-amber-300">↻ Refresh</button>
+        </div>
+        <div id="myInvitedFriendsList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+          <div class="text-center text-xs text-zinc-500 py-3">Loading your invited friends...</div>
+        </div>
+      </div>
+
       <!-- MONTHLY TOP 50 LEADERBOARD (TOTAL 1,000 TITAN TT) -->
       <div class="gold-card rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
@@ -401,7 +415,6 @@
           </button>
         </div>
 
-        <!-- User's Own Rank Banner -->
         <div class="bg-amber-500/10 border border-amber-400/30 rounded-2xl p-3 flex items-center justify-between text-xs">
           <div>
             <span class="text-zinc-400">Your Current Rank:</span>
@@ -413,7 +426,6 @@
           </div>
         </div>
 
-        <!-- Top 50 List Container -->
         <div id="leaderboardList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
           <div class="text-center text-xs text-zinc-500 py-4">Loading leaderboard rankings...</div>
         </div>
@@ -435,7 +447,7 @@
     <section id="tab-wallet" class="hidden space-y-4">
       <div>
         <h2 class="text-xl font-extrabold text-white">Wallet</h2>
-        <p class="text-xs text-zinc-400">Your Titan (TT) assets & custom withdrawal</p>
+        <p class="text-xs text-zinc-400">Your Titan (TT) assets & withdrawal history</p>
       </div>
 
       <div class="gold-card-highlight rounded-3xl p-5 space-y-3">
@@ -485,10 +497,11 @@
           👛 Connect / Reconnect TON Wallet
         </button>
 
+        <!-- 3 BUTTONS: + Buy TT | Withdraw | Withdraw History -->
         <div class="grid grid-cols-3 gap-2">
           <button onclick="switchTab('market')" class="py-2.5 rounded-xl gold-btn text-xs">+ Buy TT</button>
           <button onclick="openWithdrawModal()" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">↗ Withdraw</button>
-          <button onclick="switchTab('market')" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">🪙 Store</button>
+          <button onclick="openWithdrawHistoryModal()" class="py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/35 text-xs font-bold text-amber-300">📜 History</button>
         </div>
       </div>
 
@@ -528,6 +541,22 @@
   </nav>
 
   <!-- ==================== MODALS ==================== -->
+
+  <!-- WITHDRAW HISTORY MODAL (PROCESSING / COMPLETE / REJECTED) -->
+  <div id="withdrawHistoryModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center shrink-0">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">📜 Withdraw History</h3>
+          <p class="text-xs text-zinc-400">Live payout status from Admin verification</p>
+        </div>
+        <button onclick="closeModal('withdrawHistoryModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
+      </div>
+      <div id="withdrawHistoryList" class="space-y-2.5 overflow-y-auto pr-1">
+        <div class="text-center text-xs text-zinc-400 py-6">Loading withdrawal history...</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Leaderboard Prize Breakdown Modal -->
   <div id="prizeRulesModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
@@ -693,6 +722,7 @@
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
     DB_NODE: "titan_tt_users",
     TASKS_NODE: "titan_tt_tasks",
+    WITHDRAW_NODE: "titan_tt_withdrawals",
     SETTINGS_NODE: "titan_tt_settings",
     SECURITY_NODE: "titan_tt_security"
   };
@@ -874,6 +904,118 @@
     } catch (e) {}
   }
 
+  // ==================== LOAD USER'S INVITED FRIENDS LIST ====================
+  window.loadMyInvitedFriends = async function() {
+    if (!CONFIG.FIREBASE_URL || !tgUser.id) return;
+    const container = document.getElementById("myInvitedFriendsList");
+    try {
+      const res = await fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}.json`);
+      const users = await res.json();
+      if (!users || typeof users !== "object") {
+        container.innerHTML = `<div class="text-center text-xs text-zinc-500 py-3">No invited friends yet. Share your link above!</div>`;
+        return;
+      }
+
+      const myId = String(tgUser.id);
+      const friends = Object.entries(users)
+        .filter(([uid, u]) => u && typeof u === "object" && String(u.referredBy || "") === myId)
+        .map(([uid, u]) => {
+          const isVerified = Boolean(u.verified);
+          const holdTT = Number(u.onChainTT || 0);
+          const isQualified = isVerified && holdTT >= CONFIG.FRIEND_MIN_HOLD_LV2;
+          return {
+            uid,
+            name: u.firstName || (u.username ? `@${u.username}` : `User #${uid.slice(-4)}`),
+            username: u.username ? `@${u.username}` : `ID: ${uid}`,
+            isVerified,
+            holdTT,
+            isQualified
+          };
+        });
+
+      // Keep Invited & Qualified counts accurately synced
+      state.invited = Math.max(state.invited, friends.length);
+      const realQualCount = friends.filter(f => f.isQualified).length;
+      if (realQualCount > state.qualified) {
+        state.qualified = realQualCount;
+        saveState();
+      }
+
+      if (friends.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-zinc-500 py-3">No invited friends yet. Share your link above!</div>`;
+        return;
+      }
+
+      container.innerHTML = friends.map(f => `
+        <div class="p-3 rounded-xl bg-white/5 border ${f.isQualified ? 'border-emerald-500/30' : 'border-white/10'} flex items-center justify-between gap-2 text-xs">
+          <div class="min-w-0">
+            <div class="font-bold text-white truncate">${f.name}</div>
+            <div class="text-[10px] text-zinc-400 truncate">${f.username} • Hold: <b class="text-zinc-200">${f.holdTT.toFixed(1)} TT</b></div>
+          </div>
+          <div class="shrink-0 text-right">
+            ${f.isQualified
+              ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-extrabold">Qualified ✓</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[10px] font-bold">${!f.isVerified ? 'Unverified' : 'Need 8 TT'}</span>`
+            }
+          </div>
+        </div>
+      `).join("");
+    } catch (e) {}
+  };
+
+  // ==================== WITHDRAW HISTORY MODAL (PROCESSING / COMPLETE / REJECTED) ====================
+  window.openWithdrawHistoryModal = async function() {
+    window.openModal("withdrawHistoryModal");
+    const container = document.getElementById("withdrawHistoryList");
+    container.innerHTML = `<div class="text-center text-xs text-zinc-400 py-6">Loading withdrawal history...</div>`;
+
+    if (!CONFIG.FIREBASE_URL || !tgUser.id) return;
+    try {
+      const res = await fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.WITHDRAW_NODE}.json`);
+      const data = await res.json();
+      const myId = String(tgUser.id);
+
+      const list = data && typeof data === "object"
+        ? Object.values(data)
+            .filter(w => w && String(w.uid) === myId)
+            .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0))
+        : [];
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-zinc-500 py-8">No withdrawal requests yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(w => {
+        const st = String(w.status || "pending").toLowerCase();
+        let badgeHtml = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold">⏳ Processing</span>`;
+        if (st === "paid" || st === "complete") {
+          badgeHtml = `<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-extrabold">✅ Complete</span>`;
+        } else if (st === "rejected") {
+          badgeHtml = `<span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-extrabold">❌ Rejected</span>`;
+        }
+
+        const dateStr = w.createdAt ? new Date(Number(w.createdAt) * 1000).toLocaleString() : "Recent";
+        const shortWal = w.wallet ? `${w.wallet.slice(0, 6)}...${w.wallet.slice(-5)}` : "";
+
+        return `
+          <div class="gold-card rounded-2xl p-3.5 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-white text-sm">${Number(w.amount || 0).toLocaleString()} TT</span>
+              ${badgeHtml}
+            </div>
+            <div class="flex justify-between text-[11px] text-zinc-400">
+              <span>Wallet: <span class="font-mono text-zinc-300">${shortWal}</span></span>
+              <span>${dateStr}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    } catch (e) {
+      container.innerHTML = `<div class="text-center text-xs text-rose-400 py-6">Failed to load history. Please try again.</div>`;
+    }
+  };
+
   // ==================== MONTHLY TOP 50 LEADERBOARD LOADER ====================
   async function loadLeaderboard() {
     if (!CONFIG.FIREBASE_URL) return;
@@ -934,7 +1076,7 @@
   }
 
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v12")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v13")) || {
     firstName: "",
     username: "",
     appBalance: 0,
@@ -996,12 +1138,13 @@
       await checkAndCreditQualifiedReferral();
       saveState();
       renderAll();
+      window.loadMyInvitedFriends();
       loadLeaderboard();
     } catch (e) {}
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v12", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v13", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -1010,7 +1153,6 @@
     }
   }
 
-  // ==================== QUALIFIED REFERRAL CHECK (VERIFIED + HOLD >= 8 TT LV.2) ====================
   async function checkAndCreditQualifiedReferral() {
     if (
       state.verified &&
@@ -1356,7 +1498,7 @@
       saveState();
       renderAll();
       window.closeModal("withdrawModal");
-      showToast("🚀 Withdrawal request sent to Admin!");
+      showToast("🚀 Withdrawal submitted! Check History for status.");
     } catch (e) {
       showToast("⚠️ Network error, please retry");
     }
@@ -1364,7 +1506,7 @@
 
   // ==================== INVITE LINK HELPERS ====================
   function getInviteUrl() {
-    const botUser = CONFIG.BOT_USERNAME || "TitanMine_bot";
+    const botUser = CONFIG.BOT_USERNAME || "titan_mine_bot";
     return `https://t.me/${botUser}?start=ref_${tgUser.id}`;
   }
 
@@ -1404,7 +1546,10 @@
     activeNav.classList.add("nav-active");
     activeNav.classList.remove("text-zinc-400");
     window.recalcDirectBuy();
-    if (tabName === "friends") loadLeaderboard();
+    if (tabName === "friends") {
+      window.loadMyInvitedFriends();
+      loadLeaderboard();
+    }
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.remove("hidden"); };
