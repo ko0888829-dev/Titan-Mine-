@@ -114,7 +114,7 @@
           <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Mine</span>
           <span onclick="verifyWalletAction()" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Verify</span>
           <span onclick="openModal('levelsModal')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-200">Upgrade (Lv.1-100)</span>
-          <span onclick="switchTab('market')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">Buy TT Direct</span>
+          <span onclick="switchTab('friends')" class="cursor-pointer text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300">🏆 1,000 TT Pool</span>
         </div>
       </div>
 
@@ -263,7 +263,7 @@
       <div id="tasksContainer" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== TAB 3: MARKET (DIRECT IN-APP TT PURCHASE: 1/2/3..100/200) ==================== -->
+    <!-- ==================== TAB 3: MARKET (DIRECT TT STORE) ==================== -->
     <section id="tab-market" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -276,7 +276,6 @@
       </div>
 
       <div class="gold-card rounded-3xl p-4 space-y-3.5">
-        <!-- Quick Amount Preset Buttons -->
         <div>
           <div class="text-[11px] text-zinc-400 mb-2 font-semibold">Select TT Amount:</div>
           <div class="grid grid-cols-4 gap-1.5">
@@ -291,7 +290,6 @@
           </div>
         </div>
 
-        <!-- Custom TT Input -->
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
             <span>You receive (Exact TT)</span>
@@ -305,7 +303,6 @@
           </div>
         </div>
 
-        <!-- Total TON Cost Box -->
         <div class="bg-black/40 border border-white/10 rounded-2xl p-3.5">
           <div class="flex justify-between text-xs text-zinc-400 mb-2">
             <span>You pay (TON)</span>
@@ -319,7 +316,6 @@
           </div>
         </div>
 
-        <!-- Breakdown -->
         <div class="bg-white/5 rounded-2xl p-3.5 space-y-2 text-xs">
           <div class="flex justify-between">
             <span class="text-zinc-400">Token Cost (<span id="costBreakdownQty">1</span> TT × <span id="costBreakdownRate">1.171</span>)</span>
@@ -346,15 +342,18 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 4: FRIENDS ==================== -->
+    <!-- ==================== TAB 4: FRIENDS & MONTHLY TOP 50 LEADERBOARD ==================== -->
     <section id="tab-friends" class="hidden space-y-4">
       <div class="gold-card-highlight rounded-3xl p-5">
-        <h2 class="text-xl font-extrabold text-white">Invite & Earn</h2>
-        <p class="text-xs text-zinc-300 mt-0.5">Build your crew. Required for all Level upgrades (1–100).</p>
-        <div class="flex items-center gap-3 mt-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-extrabold text-white">Invite & Leaderboard</h2>
+          <span class="px-2.5 py-1 rounded-full bg-amber-400 text-black text-[10px] font-black">1,000 TT POOL</span>
+        </div>
+        <p class="text-xs text-zinc-300 mt-1">Earn <b>5%</b> mining commission + compete in the Monthly Top 50!</p>
+        <div class="flex items-center gap-3 mt-3.5">
           <div class="text-4xl font-black gold-text">5%</div>
           <div class="text-xs text-zinc-300 leading-relaxed">
-            <b>from your active friends' mining claims</b><br>
+            <b>from qualified friends' mining claims</b><br>
             Friend must verify (0.1 TON) & hold <b>8+ TT (Lv.2)</b>
           </div>
         </div>
@@ -375,18 +374,49 @@
         </div>
       </div>
 
+      <!-- Invite Link Card -->
       <div class="gold-card rounded-3xl p-4 space-y-3">
         <h3 class="font-extrabold text-sm text-white">Your invite link</h3>
         <div class="bg-black/50 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-zinc-300 font-mono truncate" id="inviteLinkBox">
-          https://t.me/TitanMine_bot?start=ref_000
+          Loading bot link...
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <button onclick="shareInviteLink()" class="py-3 rounded-xl gold-btn text-xs">✈️ Invite friends</button>
           <button onclick="copyInviteLink()" class="py-3 rounded-xl bg-white/10 text-white font-bold text-xs">📋 Copy link</button>
         </div>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          To count as a <b>Qualified Friend</b> and unlock your levels, your invited friend must complete the <b>0.1 TON</b> verification <b>AND</b> hold at least <b>8 TT (Wallet Hold Lv.2)</b> on-chain. You earn <b>5%</b> commission every time they claim mined TT.
+          To count as a <b>Qualified Friend</b>, your friend must complete the <b>0.1 TON</b> verification <b>AND</b> hold at least <b>8 TT (Lv.2)</b> on-chain.
         </p>
+      </div>
+
+      <!-- MONTHLY TOP 50 LEADERBOARD (TOTAL 1,000 TITAN TT) -->
+      <div class="gold-card rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-extrabold text-base text-white flex items-center gap-1.5">🏆 Monthly Leaderboard</h3>
+            <p class="text-[11px] text-zinc-400">Top 1–50 Qualified Inviters share <b class="text-amber-400">1,000 TT</b> monthly</p>
+          </div>
+          <button onclick="openModal('prizeRulesModal')" class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-bold text-amber-300">
+            Prize Table ⓘ
+          </button>
+        </div>
+
+        <!-- User's Own Rank Banner -->
+        <div class="bg-amber-500/10 border border-amber-400/30 rounded-2xl p-3 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-zinc-400">Your Current Rank:</span>
+            <b class="text-white ml-1" id="myLbRank">#--</b>
+          </div>
+          <div>
+            <span class="text-zinc-400">Est. Reward:</span>
+            <b class="text-amber-400 ml-1" id="myLbPrize">0.00 TT</b>
+          </div>
+        </div>
+
+        <!-- Top 50 List Container -->
+        <div id="leaderboardList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+          <div class="text-center text-xs text-zinc-500 py-4">Loading leaderboard rankings...</div>
+        </div>
       </div>
 
       <div onclick="openModal('ambassadorModal')" class="gold-card rounded-2xl p-4 flex items-center justify-between cursor-pointer">
@@ -425,7 +455,6 @@
         </div>
       </div>
 
-      <!-- 25% Hold Requirement Status Box -->
       <div class="gold-card rounded-3xl p-4 space-y-2.5 border border-amber-400/30">
         <div class="flex justify-between items-center text-xs">
           <span class="font-bold text-amber-300">🔒 Withdrawal Hold Rule (25%)</span>
@@ -491,14 +520,38 @@
       <div class="nav-pill px-3.5 py-1 rounded-full">🪙</div><span>Buy TT</span>
     </button>
     <button onclick="switchTab('friends')" id="nav-friends" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
-      <div class="nav-pill px-3.5 py-1 rounded-full">👥</div><span>Friends</span>
+      <div class="nav-pill px-3.5 py-1 rounded-full">🏆</div><span>Friends</span>
     </button>
     <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn text-zinc-400 flex flex-col items-center gap-1 text-[11px] font-bold">
       <div class="nav-pill px-3.5 py-1 rounded-full">👛</div><span>Wallet</span>
     </button>
   </nav>
 
-  <!-- ==================== CUSTOM WITHDRAW AMOUNT MODAL ==================== -->
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Leaderboard Prize Breakdown Modal -->
+  <div id="prizeRulesModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-3">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">🏆 Monthly Prize Pool (1,000 TT)</h3>
+          <p class="text-xs text-zinc-400">Distributed every month to Top 50 Qualified Inviters</p>
+        </div>
+        <button onclick="closeModal('prizeRulesModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="gold-card-highlight p-3 rounded-xl flex justify-between font-extrabold"><span>🥇 Rank #1</span><span class="text-amber-400">200.00 TT</span></div>
+        <div class="gold-card p-3 rounded-xl flex justify-between font-extrabold"><span>🥈 Rank #2</span><span class="text-amber-400">120.00 TT</span></div>
+        <div class="gold-card p-3 rounded-xl flex justify-between font-extrabold"><span>🥉 Rank #3</span><span class="text-amber-400">80.00 TT</span></div>
+        <div class="bg-white/5 p-3 rounded-xl flex justify-between"><span>🏅 Rank #4 – #10 (7 winners)</span><span class="font-bold text-white">30.00 TT each (210 TT)</span></div>
+        <div class="bg-white/5 p-3 rounded-xl flex justify-between"><span>🎖️ Rank #11 – #25 (15 winners)</span><span class="font-bold text-white">14.00 TT each (210 TT)</span></div>
+        <div class="bg-white/5 p-3 rounded-xl flex justify-between"><span>⭐ Rank #26 – #50 (25 winners)</span><span class="font-bold text-white">7.20 TT each (180 TT)</span></div>
+      </div>
+      <p class="text-[11px] text-zinc-400">* Only friends who complete 0.1 TON verification AND hold ≥ 8 TT (Lv.2) are counted.</p>
+    </div>
+  </div>
+
+  <!-- Custom Withdraw Modal -->
   <div id="withdrawModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
     <div class="w-full max-w-md bg-[#121216] border-t border-amber-500/30 rounded-t-3xl p-5 space-y-4">
       <div class="flex justify-between items-center">
@@ -612,8 +665,8 @@
         <button onclick="closeModal('notifModal')" class="w-8 h-8 rounded-full bg-white/10 text-white">✕</button>
       </div>
       <div class="gold-card rounded-2xl p-3.5 text-xs space-y-1">
-        <div class="font-bold text-amber-400">ℹ️ Welcome to TITAN (TT) • Direct Store Active!</div>
-        <p class="text-zinc-300">Buy exact TT amounts (1 to 200+ TT) at 1.171 TON/TT directly inside the Buy TT tab with zero slippage.</p>
+        <div class="font-bold text-amber-400">🏆 Monthly Top 50 Leaderboard (1,000 TT Pool)!</div>
+        <p class="text-zinc-300">Invite friends who verify (0.1 TON) and hold ≥ 8 TT (Lv.2) to rank in Top 50 and win monthly TT rewards.</p>
       </div>
     </div>
   </div>
@@ -629,14 +682,14 @@
     COIN_SYMBOL: "TT",
     JETTON_ADDRESS: "EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt",
     ADMIN_WALLET: "UQAPQ6UWezq6l_wHjaNEOlTu6Ux6BHSXeYaEDyoDfsuLE3Yz",
-    BOT_USERNAME: "TitanMine_bot",
+    BOT_USERNAME: localStorage.getItem("titan_real_bot_username") || "",
     VERIFY_TON_AMOUNT: 0.1,
     SERVICE_FEE_TON: 0.1,
-    DEFAULT_TON_PER_TT: 1.171, // 1 TT = 1.171 TON ($1.171 DeDust Chart Price)
+    DEFAULT_TON_PER_TT: 1.171,
     MIN_WITHDRAW: 100,
     HOLD_PERCENT_REQUIRED: 0.25,
-    FRIEND_MIN_HOLD_LV2: 8, // Friend must hold >= 8 TT (Lv.2) to become Qualified
-    REF_COMMISSION_RATE: 0.05, // 5% commission from qualified friends' mining claims
+    FRIEND_MIN_HOLD_LV2: 8,
+    REF_COMMISSION_RATE: 0.05,
     FIREBASE_URL: "https://adpro-bot-default-rtdb.firebaseio.com",
     DB_NODE: "titan_tt_users",
     TASKS_NODE: "titan_tt_tasks",
@@ -645,6 +698,16 @@
   };
 
   let currentTonPerTT = CONFIG.DEFAULT_TON_PER_TT;
+
+  function getRankPrize(rank) {
+    if (rank === 1) return 200.0;
+    if (rank === 2) return 120.0;
+    if (rank === 3) return 80.0;
+    if (rank >= 4 && rank <= 10) return 30.0;
+    if (rank >= 11 && rank <= 25) return 14.0;
+    if (rank >= 26 && rank <= 50) return 7.2;
+    return 0;
+  }
 
   function getLeagueName(lv) {
     if (lv <= 10) return "Bronze";
@@ -659,7 +722,7 @@
     const lv = i + 1;
     if (lv === 1) return { lv: 1, name: "Bronze I", daily: 10, holdReq: 0, refReq: 0 };
     const daily = Number((10 + Math.pow((lv - 1) / 99, 1.35) * 490).toFixed(1));
-    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8); // Lv.2 = 8 TT
+    const holdReq = Math.round(Math.pow(lv - 1, 1.55) * 8);
     const refReq = Math.max(1, Math.round((lv - 1) * 2.5));
     return { lv, name: `${getLeagueName(lv)} ${lv}`, daily, holdReq, refReq };
   });
@@ -669,7 +732,19 @@
     { id: "t2", type: "PROMOTED • INSTANT", title: "Trade TT on DeDust.io", desc: "Check TT/TON pool on DeDust", reward: 1, url: "https://dedust.io/swap/TON/EQBgi1gn-GdSOCHI165sseghlgpscI2LfiwDa1ZYa0uUzazt" }
   ];
 
-  // ==================== TON TEXT COMMENT (MEMO) BOC BUILDER ====================
+  // ==================== RESOLVE EXACT BOT USERNAME AUTOMATICALLY ====================
+  async function resolveBotUsername() {
+    try {
+      const res = await fetch("/api/bot_info");
+      const info = await res.json();
+      if (info && info.ok && info.username) {
+        CONFIG.BOT_USERNAME = info.username;
+        localStorage.setItem("titan_real_bot_username", info.username);
+        document.getElementById("inviteLinkBox").textContent = getInviteUrl();
+      }
+    } catch (e) {}
+  }
+
   function buildMemoPayload(memoText) {
     return beginCell()
       .storeUint(0, 32)
@@ -679,7 +754,6 @@
       .toString("base64");
   }
 
-  // ==================== FETCH ADMIN DIRECT BUY PRICE FROM FIREBASE ====================
   async function loadStorePrice() {
     if (!CONFIG.FIREBASE_URL) return;
     try {
@@ -800,8 +874,69 @@
     } catch (e) {}
   }
 
+  // ==================== MONTHLY TOP 50 LEADERBOARD LOADER ====================
+  async function loadLeaderboard() {
+    if (!CONFIG.FIREBASE_URL) return;
+    try {
+      const res = await fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}.json`);
+      const users = await res.json();
+      if (!users || typeof users !== "object") return;
+
+      const list = Object.entries(users)
+        .filter(([_, u]) => u && typeof u === "object" && !u.banned && !u.isMultiFlagged)
+        .map(([uid, u]) => ({
+          uid: String(uid),
+          name: u.firstName || u.username || `Miner #${uid.slice(-4)}`,
+          monthlyQualified: Number(u.monthlyQualified ?? u.qualified ?? 0)
+        }))
+        .filter(item => item.monthlyQualified > 0)
+        .sort((a, b) => b.monthlyQualified - a.monthlyQualified);
+
+      const top50 = list.slice(0, 50);
+      const myIdx = list.findIndex(item => item.uid === String(tgUser.id));
+
+      if (myIdx !== -1) {
+        const myRank = myIdx + 1;
+        document.getElementById("myLbRank").textContent = `#${myRank}`;
+        document.getElementById("myLbPrize").textContent = `${getRankPrize(myRank).toFixed(2)} TT`;
+      } else {
+        document.getElementById("myLbRank").textContent = "Unranked";
+        document.getElementById("myLbPrize").textContent = "0.00 TT";
+      }
+
+      const container = document.getElementById("leaderboardList");
+      if (top50.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-zinc-400 py-4">No qualified inviters yet this month. Be #1 and win 200 TT!</div>`;
+        return;
+      }
+
+      container.innerHTML = top50.map((item, i) => {
+        const rank = i + 1;
+        const prize = getRankPrize(rank);
+        const isMe = item.uid === String(tgUser.id);
+        const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+        return `
+          <div class="p-2.5 rounded-xl border ${isMe ? 'gold-card-highlight' : 'bg-white/5 border-white/10'} flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-7 text-center font-black ${rank <= 3 ? 'text-base' : 'text-amber-400'}">${medal}</span>
+              <div class="truncate">
+                <div class="font-bold text-white truncate">${item.name} ${isMe ? '(You)' : ''}</div>
+                <div class="text-[10px] text-zinc-400">${item.monthlyQualified} Qualified Friends</div>
+              </div>
+            </div>
+            <div class="text-right shrink-0 pl-2">
+              <div class="font-extrabold text-amber-400">+${prize.toFixed(1)} TT</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    } catch (e) {}
+  }
+
   // ==================== USER STATE ====================
-  let state = JSON.parse(localStorage.getItem("titan_tt_v11")) || {
+  let state = JSON.parse(localStorage.getItem("titan_tt_v12")) || {
+    firstName: "",
+    username: "",
     appBalance: 0,
     onChainTT: 0,
     tonBalance: 0,
@@ -820,6 +955,7 @@
     referredBy: "",
     invited: 0,
     qualified: 0,
+    monthlyQualified: 0,
     refEarned: 0,
     activities: []
   };
@@ -854,15 +990,18 @@
           });
         }
       }
+      state.firstName = tgUser.first_name || state.firstName || "Miner";
+      state.username = tgUser.username || state.username || "";
       await runAntiCheatSecurity(tgUser.id);
       await checkAndCreditQualifiedReferral();
       saveState();
       renderAll();
+      loadLeaderboard();
     } catch (e) {}
   }
 
   function saveState() {
-    localStorage.setItem("titan_tt_v11", JSON.stringify(state));
+    localStorage.setItem("titan_tt_v12", JSON.stringify(state));
     if (CONFIG.FIREBASE_URL && tgUser.id) {
       fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.DB_NODE}/${tgUser.id}.json`, {
         method: "PATCH",
@@ -889,7 +1028,8 @@
           await fetch(refUrl, {
             method: "PATCH",
             body: JSON.stringify({
-              qualified: (rData.qualified || 0) + 1
+              qualified: (rData.qualified || 0) + 1,
+              monthlyQualified: (rData.monthlyQualified || 0) + 1
             })
           });
           state.qualifiedCredited = true;
@@ -957,7 +1097,7 @@
     }
   }, 1000);
 
-  // ==================== 0.1 TON VERIFY WITH MEMO & CLAIM (5% REF COMMISSION ONLY) ====================
+  // ==================== 0.1 TON VERIFY & CLAIM ====================
   window.verifyWalletAction = async function() {
     if (!state.walletAddress) return window.connectOrReconnectWallet();
     if (state.verified) return showToast("✅ Wallet already verified!");
@@ -1019,7 +1159,7 @@
     showToast(`🎉 Claimed +${mined.toFixed(3)} TT!`);
   };
 
-  // ==================== DIRECT IN-APP TT STORE (BUY 1, 2, 3, 8, 25, 50, 100, 200+ TT) ====================
+  // ==================== DIRECT IN-APP TT STORE ====================
   window.selectBuyPreset = function(qty) {
     document.getElementById("buyTTInput").value = qty;
     window.recalcDirectBuy();
@@ -1145,7 +1285,7 @@
     } catch (e) {}
   }
 
-  // ==================== CUSTOM AMOUNT WITHDRAWAL & ADMIN NOTICE ====================
+  // ==================== CUSTOM AMOUNT WITHDRAWAL ====================
   window.openWithdrawModal = function() {
     if (!state.verified) return showToast("🛡️ Verify wallet (0.1 TON) first!");
     if (!state.walletAddress) return showToast("👛 Connect your TON wallet first!");
@@ -1222,11 +1362,30 @@
     }
   };
 
-  function getInviteUrl() { return `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`; }
-  window.copyInviteLink = function() { navigator.clipboard.writeText(getInviteUrl()); showToast("📋 Invite link copied!"); };
-  window.shareInviteLink = function() {
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(getInviteUrl())}&text=${encodeURIComponent("⚡ Mine TITAN (TT) on TON! Join my crew:")}`, "_blank");
+  // ==================== INVITE LINK HELPERS ====================
+  function getInviteUrl() {
+    const botUser = CONFIG.BOT_USERNAME || "TitanMine_bot";
+    return `https://t.me/${botUser}?start=ref_${tgUser.id}`;
+  }
+
+  window.copyInviteLink = async function() {
+    if (!CONFIG.BOT_USERNAME) await resolveBotUsername();
+    navigator.clipboard.writeText(getInviteUrl());
+    showToast("📋 Invite link copied!");
   };
+
+  window.shareInviteLink = async function() {
+    if (!CONFIG.BOT_USERNAME) await resolveBotUsername();
+    const url = encodeURIComponent(getInviteUrl());
+    const text = encodeURIComponent("⚡ Mine TITAN (TT) on TON ($1.171)! Join my crew:");
+    const shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(shareUrl);
+    } else {
+      window.open(shareUrl, "_blank");
+    }
+  };
+
   window.submitAmbassador = function() {
     if (!document.getElementById("ambLink").value.trim()) return showToast("Enter channel link");
     window.closeModal("ambassadorModal");
@@ -1245,6 +1404,7 @@
     activeNav.classList.add("nav-active");
     activeNav.classList.remove("text-zinc-400");
     window.recalcDirectBuy();
+    if (tabName === "friends") loadLeaderboard();
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.remove("hidden"); };
@@ -1360,6 +1520,7 @@
   }
 
   renderAll();
+  resolveBotUsername();
   loadStorePrice();
   loadDynamicTasks();
   syncWithFirebase();
